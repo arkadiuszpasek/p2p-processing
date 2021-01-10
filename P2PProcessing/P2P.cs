@@ -6,7 +6,13 @@ namespace P2PProcessing
 {
     public class P2P
     {
-        Session session = new Session(8888);
+        Session session;
+
+        public P2P(int port)
+        {
+            this.session = new Session(port);
+        }
+
 
         public void ConnectToNode(string host, int port)
         {

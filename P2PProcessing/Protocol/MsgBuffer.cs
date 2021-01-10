@@ -8,7 +8,7 @@ namespace P2PProcessing.Protocol
 {
     public enum MsgKind
     {
-        Hello, HelloResponse, ProblemPayload, ProblemResult
+        Hello = 1, HelloResponse, ProblemPayload, ProblemResult
     }
 
     class MsgBuffer
@@ -20,10 +20,13 @@ namespace P2PProcessing.Protocol
         {
             this.kind = determineKindFromHeader(header);
             this.bodyLength = determineBodyLengthFromHeader(header);
+
+            Console.WriteLine($"Buff with {kind}");
         }
 
         public static byte[] MsgToBuffer(Msg msg)
         {
+            Console.WriteLine($"msgtobuff {msg.GetMsgKind()}");
             byte[] kind = BitConverter.GetBytes((UInt16)msg.GetMsgKind());
             byte[] body;
 
@@ -39,13 +42,13 @@ namespace P2PProcessing.Protocol
             byte[] bodyLength = BitConverter.GetBytes((UInt32)body.Length);
 
             byte[] header = new byte[kind.Length + bodyLength.Length];
-            Array.Copy(kind, header, 0);
+            Array.Copy(kind, header, kind.Length);
             Array.Copy(bodyLength, 0, header, 2, bodyLength.Length);
 
             var buffer = new byte[header.Length + body.Length];
 
-            header.CopyTo(buffer, 0);
-            body.CopyTo(buffer, header.Length);
+            Array.Copy(header, buffer, header.Length);
+            Array.Copy(body, 0, buffer, header.Length, body.Length);
 
             return buffer;
         }

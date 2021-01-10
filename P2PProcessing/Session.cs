@@ -10,27 +10,51 @@ namespace P2PProcessing
 {
     class Session
     {
-        Dictionary<Guid, NodeSession> sessions = new Dictionary<Guid, NodeSession>();
+        Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
         Guid id = Guid.NewGuid();
         TcpListener listener;
+        Thread listenerThread;
 
         public Session(int port)
         {
-            listener = new TcpListener(IPAddress.Any, port); // TODO: make config and move port there
+            listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
 
-            new Thread(listenForConnections).Start(); // TODO: store in class and add Close & finish
+            this.listenerThread = new Thread(listenForConnections);
+            this.listenerThread.Start();
+        }
+
+        public void Close()
+        {
+            Console.WriteLine($"{this} ending..");
+
+            if (listenerThread.IsAlive)
+            {
+                listenerThread.Join();
+            }
+
+            foreach (var connection in connectedSessions)
+            {
+                connection.Value.Close();
+            }
         }
 
         public void ConnectToNode(string host, int port)
         {
+            Console.WriteLine($"{this}: Connecting to: {host}:{port}");
             Connection connection = Connection.To(host, port, id);
 
             var helloResponse = connection.ListenForHelloResponse();
 
-            sessions.Add(helloResponse.GetNodeId(), new NodeSession(connection));
+            Console.WriteLine($"{this}: Connected to: {helloResponse.GetNodeId()}");
+
+            connectedSessions.Add(helloResponse.GetNodeId(), new NodeSession(this, connection));
         }
 
+        public  void onMessage(Msg msg)
+        {
+            Console.WriteLine($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
+        }
 
         private void listenForConnections()
         {
@@ -40,12 +64,16 @@ namespace P2PProcessing
             {
                 Socket socket = listener.AcceptSocket();
 
-                Connection connection = Connection.From(socket, id);
-                var helloMsg = connection.ListenForHello();
+                Console.WriteLine($"{this}: Received connection");
 
-                sessions.Add(helloMsg.GetNodeId(), new NodeSession(connection));
+                Connection connection = Connection.From(socket, id);
+                var hello = connection.ListenForHello(); // TDOO: TIMEOUT
+                connection.Send(new HelloResponseMsg());
+
+                connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection));
             }
         }
+
 
         public override string ToString()
         {

@@ -47,7 +47,7 @@ namespace P2PProcessing.Protocol
         {
             // TODO: wrap in try catch and loggin
             byte[] header = new byte[HEADER_SIZE];
-            socket.Receive(header);
+            socket.Receive(header, HEADER_SIZE, SocketFlags.None);
 
             MsgBuffer msgBuffer = new MsgBuffer(header);
             Console.WriteLine($"{this}: Received {msgBuffer.kind} header");
@@ -55,7 +55,7 @@ namespace P2PProcessing.Protocol
             byte[] body = new byte[msgBuffer.bodyLength];
 
             socket.Receive(body, (int)msgBuffer.bodyLength, SocketFlags.None);
-            Console.WriteLine($"{this}: Body of {msgBuffer.kind} received");
+            Console.WriteLine($"{this}: Body of {msgBuffer.kind} received - {msgBuffer.bodyLength}");
             return msgBuffer.BodyToMsg(body);
         }
 
@@ -70,6 +70,9 @@ namespace P2PProcessing.Protocol
 
         public void Close()
         {
+            // TODO: create new Msg Disconnect, to inform other nodes that i'm disconecting
+
+            Console.WriteLine($"{this} ending..");
             this.socket.Close();
         }
 

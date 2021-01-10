@@ -8,23 +8,43 @@ namespace P2PProcessing
 {
     class NodeSession
     {
+        Session session;
         Connection connection;
+        Thread thread;
 
-        public NodeSession(Connection connection)
+        public NodeSession(Session session, Connection connection)
         {
+            this.session = session;
             this.connection = connection;
 
-            new Thread(start).Start(); // TODO: store thread handle implement close(),  and join() on close()
+            this.thread = new Thread(start);
+            thread.Start();
+        }
+
+        public void Close()
+        {
+            if (thread.IsAlive)
+            {
+                thread.Join();
+            }
+
+            connection.Close();
         }
 
         private void start()
         {
             Console.WriteLine($"{this} started");
+
+            while (true)
+            {
+                var msg = connection.Receive();
+                session.onMessage(msg);
+            }
         }
 
         public override string ToString()
         {
-            return $"Node session to {connection}";
+            return $"Node session - {connection}";
         }
     }
 }
