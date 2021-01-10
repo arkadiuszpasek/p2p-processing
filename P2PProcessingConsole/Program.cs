@@ -8,8 +8,7 @@ namespace P2PProcessingConsole
         static void Main(string[] args)
         {
             var p = new P2PSdk();
-            string isItWorking = p.Start();
-            Console.WriteLine(isItWorking);
+            p.Start();
         }
     }
 }

@@ -4,9 +4,9 @@ namespace P2PProcessing
 {
     public class P2PSdk
     {
-        public string Start()
+        public void Start()
         {
-            return "Hello p2p";
+            Console.WriteLine("Sdk start");
         }
     }
 }
