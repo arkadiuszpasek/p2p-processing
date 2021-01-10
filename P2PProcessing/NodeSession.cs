@@ -33,7 +33,7 @@ namespace P2PProcessing
 
         private void start()
         {
-            Console.WriteLine($"{this} started");
+            P2P.logger.Debug($"{this} started");
 
             while (true)
             {

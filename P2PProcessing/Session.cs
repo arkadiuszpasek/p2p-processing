@@ -26,7 +26,7 @@ namespace P2PProcessing
 
         public void Close()
         {
-            Console.WriteLine($"{this} ending..");
+            P2P.logger.Debug($"{this} ending..");
 
             if (listenerThread.IsAlive)
             {
@@ -41,33 +41,33 @@ namespace P2PProcessing
 
         public void ConnectToNode(string host, int port)
         {
-            Console.WriteLine($"{this}: Connecting to: {host}:{port}");
+            P2P.logger.Debug($"{this}: Connecting to: {host}:{port}");
             Connection connection = Connection.To(host, port, id);
 
             var helloResponse = connection.ListenForHelloResponse();
 
-            Console.WriteLine($"{this}: Connected to: {helloResponse.GetNodeId()}");
+            P2P.logger.Info($"{this}: Connected to: {helloResponse.GetNodeId()}");
 
             connectedSessions.Add(helloResponse.GetNodeId(), new NodeSession(this, connection));
         }
 
         public  void onMessage(Msg msg)
         {
-            Console.WriteLine($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
+            P2P.logger.Debug($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
         }
 
         private void listenForConnections()
         {
-            Console.WriteLine($"{this} listening for connections..");
+            P2P.logger.Info($"{this} listening for connections..");
 
             while (true)
             {
                 Socket socket = listener.AcceptSocket();
 
-                Console.WriteLine($"{this}: Received connection");
+                P2P.logger.Debug($"{this}: Received connection");
 
                 Connection connection = Connection.From(socket, id);
-                var hello = connection.ListenForHello(); // TDOO: TIMEOUT
+                var hello = connection.ListenForHello();
                 connection.Send(new HelloResponseMsg());
 
                 connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection));

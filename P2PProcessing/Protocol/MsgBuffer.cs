@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P2PProcessing.ErrorHandling;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -20,37 +21,41 @@ namespace P2PProcessing.Protocol
         {
             this.kind = determineKindFromHeader(header);
             this.bodyLength = determineBodyLengthFromHeader(header);
-
-            Console.WriteLine($"Buff with {kind}");
         }
 
         public static byte[] MsgToBuffer(Msg msg)
         {
-            Console.WriteLine($"msgtobuff {msg.GetMsgKind()}");
-            byte[] kind = BitConverter.GetBytes((UInt16)msg.GetMsgKind());
-            byte[] body;
-
-            XmlSerializer serializer = getSerializer(msg);
-
-            using (var stream = new MemoryStream())
+            try
             {
-                serializer.Serialize(stream, msg);
+                byte[] kind = BitConverter.GetBytes((UInt16)msg.GetMsgKind());
+                byte[] body;
 
-                body = stream.ToArray();
+                XmlSerializer serializer = getSerializer(msg);
+
+                using (var stream = new MemoryStream())
+                {
+                    serializer.Serialize(stream, msg);
+
+                    body = stream.ToArray();
+                }
+
+                byte[] bodyLength = BitConverter.GetBytes((UInt32)body.Length);
+
+                byte[] header = new byte[kind.Length + bodyLength.Length];
+                Array.Copy(kind, header, kind.Length);
+                Array.Copy(bodyLength, 0, header, 2, bodyLength.Length);
+
+                var buffer = new byte[header.Length + body.Length];
+
+                Array.Copy(header, buffer, header.Length);
+                Array.Copy(body, 0, buffer, header.Length, body.Length);
+
+                return buffer;
+            } catch (Exception e)
+            {
+                P2P.logger.Error($"Cannot serialize message: {msg.GetMsgKind()}. {e}");
+                throw new ProtocolException($"Cannot serialize message: {msg.GetMsgKind()}");
             }
-
-            byte[] bodyLength = BitConverter.GetBytes((UInt32)body.Length);
-
-            byte[] header = new byte[kind.Length + bodyLength.Length];
-            Array.Copy(kind, header, kind.Length);
-            Array.Copy(bodyLength, 0, header, 2, bodyLength.Length);
-
-            var buffer = new byte[header.Length + body.Length];
-
-            Array.Copy(header, buffer, header.Length);
-            Array.Copy(body, 0, buffer, header.Length, body.Length);
-
-            return buffer;
         }
 
         public Msg BodyToMsg(byte[] body)
@@ -65,21 +70,21 @@ namespace P2PProcessing.Protocol
                 }
                 catch (Exception e)
                 {
-                    throw new Exception(string.Format("Error deserializing message of kind '{0}'", kind), e);
+                    throw new ProtocolException($"Error deserializing message of kind: {kind}. {e}");
                 }
             }
         }
 
         public MsgKind determineKindFromHeader(byte[] header)
         {
-            var typeValue = (Int32)BitConverter.ToUInt16(header, 0);
+            var kind = (Int32)BitConverter.ToUInt16(header, 0);
 
-            if (!Enum.IsDefined(typeof(MsgKind), typeValue))
+            if (!Enum.IsDefined(typeof(MsgKind), kind))
             {
-                throw new Exception(); // TODO: better exceptions
+                throw new ProtocolException($"Invalid message kind: {kind}");
             }
 
-            return (MsgKind)typeValue;
+            return (MsgKind)kind;
         }
         public UInt32 determineBodyLengthFromHeader(byte[] header)
         {
@@ -99,7 +104,7 @@ namespace P2PProcessing.Protocol
                 case MsgKind.ProblemResult:
                     return typeof(ProblemResultMsg);
                 default:
-                    throw new Exception(); // TODO: better exception
+                    throw new ProtocolException($"Invalid message kind: {kind}");
             }
         }
 
@@ -112,7 +117,6 @@ namespace P2PProcessing.Protocol
 
         private static XmlSerializer getSerializer(Type type)
         {
-            // xxx: maybe implement reusing of serializers?
             return new XmlSerializer(type);
         }
 

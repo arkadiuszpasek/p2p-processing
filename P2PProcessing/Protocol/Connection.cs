@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P2PProcessing.ErrorHandling;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -45,46 +46,60 @@ namespace P2PProcessing.Protocol
 
         public Msg Receive()
         {
-            // TODO: wrap in try catch and loggin
-            byte[] header = new byte[HEADER_SIZE];
-            socket.Receive(header, HEADER_SIZE, SocketFlags.None);
+            try
+            {
+                byte[] header = new byte[HEADER_SIZE];
+                socket.Receive(header, HEADER_SIZE, SocketFlags.None);
 
-            MsgBuffer msgBuffer = new MsgBuffer(header);
-            Console.WriteLine($"{this}: Received {msgBuffer.kind} header");
+                MsgBuffer msgBuffer = new MsgBuffer(header);
+                P2P.logger.Debug($"{this}: Received {msgBuffer.kind} header");
 
-            byte[] body = new byte[msgBuffer.bodyLength];
+                byte[] body = new byte[msgBuffer.bodyLength];
 
-            socket.Receive(body, (int)msgBuffer.bodyLength, SocketFlags.None);
-            Console.WriteLine($"{this}: Body of {msgBuffer.kind} received - {msgBuffer.bodyLength}");
-            return msgBuffer.BodyToMsg(body);
+                socket.Receive(body, (int)msgBuffer.bodyLength, SocketFlags.None);
+                P2P.logger.Debug($"{this}: Body of {msgBuffer.kind} received - {msgBuffer.bodyLength}");
+                return msgBuffer.BodyToMsg(body);
+            } catch (Exception e)
+            {
+                P2P.logger.Error($"Error listening for message: {e}");
+                throw new ConnectionException("Receiving error");
+            }
         }
 
         public void Send(Msg msg)
         {
             msg.SetNodeId(this.id);
 
-            byte[] buffer = MsgBuffer.MsgToBuffer(msg);
-            Console.WriteLine($"{this}: Sending {msg.GetMsgKind()} message - {buffer.Length}");
-            socket.Send(buffer); // error handling
+            try
+            {
+                byte[] buffer = MsgBuffer.MsgToBuffer(msg);
+                P2P.logger.Debug($"{this}: Sending {msg.GetMsgKind()} message - {buffer.Length}");
+                socket.Send(buffer);
+            } catch (Exception e)
+            {
+                P2P.logger.Error($"Error sending message: {e}");
+                throw new ConnectionException($"Error while sending message {msg.GetMsgKind()}");
+            }
+
         }
 
         public void Close()
         {
             // TODO: create new Msg Disconnect, to inform other nodes that i'm disconecting
 
-            Console.WriteLine($"{this} ending..");
+            P2P.logger.Debug($"{this} ending..");
             this.socket.Close();
         }
 
         public HelloResponseMsg ListenForHelloResponse()
         {
-            // XXX: with timeout & error handling
+            // TODO: with timeout
 
             var message = this.Receive() as HelloResponseMsg;
 
             if (message == null)
             {
-                throw new Exception("invalid message"); // todo: better exceptions
+                throw new ProtocolException("Received message, but kind wasn't equal to HelloResponse");
             }
 
             return message;
@@ -92,13 +107,13 @@ namespace P2PProcessing.Protocol
         
         public HelloMsg ListenForHello()
         {
-            // XXX: with timeout & error handling
+            // TODO: with timeout
 
             var message = this.Receive() as HelloMsg;
 
             if (message == null)
             {
-                throw new Exception("invalid message"); // todo: better exceptions
+                throw new ProtocolException("Received message, but kind wasn't equal to Hello");
             }
 
             return message;
@@ -110,11 +125,12 @@ namespace P2PProcessing.Protocol
             {
                 socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
                 socket.Connect(this.Host, this.Port);
-                // todo log
+                P2P.logger.Debug($"Connection connected to {Host}:{Port}");
             }
             catch (Exception e)
             {
-                // todo log
+                P2P.logger.Error($"Error intializing socket to: {Host}: {e.Message}");
+                throw new ConnectionException("Error initializing");
             }
         }
 
