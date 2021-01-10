@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "4DVItusbHSieYGqcfYFQRY4MgRHS/TLnBJ2W56AMv4E9/qwvyPJhiIDIMjGxYP6rGJslZWuujrBGEV75i1mOww==",
+  "success": true,
+  "projectFilePath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\thevi\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}
