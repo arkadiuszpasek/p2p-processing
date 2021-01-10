@@ -1,4 +1,5 @@
 ﻿using System;
+using P2PProcessing;
 
 namespace P2PProcessingConsole
 {
@@ -6,7 +7,9 @@ namespace P2PProcessingConsole
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var p = new P2PSdk();
+            string isItWorking = p.Start();
+            Console.WriteLine(isItWorking);
         }
     }
 }

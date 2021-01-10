@@ -6,7 +6,7 @@ namespace P2PProcessing
     {
         public string Start()
         {
-            return "Hello world";
+            return "Hello p2p";
         }
     }
 }

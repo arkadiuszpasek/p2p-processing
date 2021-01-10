@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {}
+    ".NETCoreApp,Version=v3.1": {
+      "P2PProcessing/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "compile": {
+          "bin/placeholder/P2PProcessing.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/P2PProcessing.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "P2PProcessing/1.0.0": {
+      "type": "project",
+      "path": "../P2PProcessing/P2PProcessing.csproj",
+      "msbuildProject": "../P2PProcessing/P2PProcessing.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": []
+    ".NETCoreApp,Version=v3.1": [
+      "P2PProcessing >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\thevi\\.nuget\\packages\\": {}
@@ -32,7 +51,11 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj": {
+              "projectPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
