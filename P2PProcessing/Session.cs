@@ -50,7 +50,7 @@ namespace P2PProcessing
             string hash;
             PayloadState[] assignement;
 
-            public int getProgress()
+            public int GetProgress()
             {
                 // TODO: przy eksportowaniu do osobnego pliku dodać using System.Linq;
                 return assignement.Aggregate(0, (acc, payload) => payload is Calculated ? acc + 1 : acc);
@@ -100,15 +100,15 @@ namespace P2PProcessing
             connectedSessions.Add(helloResponse.GetNodeId(), new NodeSession(this, connection));
         }
 
-        public void broadcastToConnectedNodes(Msg msg)
+        public void BroadcastToConnectedNodes(Msg msg)
         {
             foreach (var nodeSession in this.connectedSessions.Values)
             {
-                nodeSession.send(msg);
+                nodeSession.Send(msg);
             }
         }
 
-        public  void onMessage(Msg msg)
+        public void OnMessage(Msg msg)
         {
             P2P.logger.Debug($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
 
@@ -132,7 +132,6 @@ namespace P2PProcessing
                 connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection));
             }
         }
-
 
         public override string ToString()
         {
