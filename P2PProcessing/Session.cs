@@ -3,17 +3,66 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
+using System.Linq;
 
 namespace P2PProcessing
 {
+
+    abstract class State
+    {
+        Session session;
+        abstract public void onMessage(Msg msg);
+    }
+
+    // class WorkingState : State {
+    // onMessage(Msg) -> biorę wolny -> wysyłam Updated, this.session.broadcast(Msg)
+    // }
+
+
     class Session
     {
         Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
         Guid id = Guid.NewGuid();
         TcpListener listener;
         Thread listenerThread;
+        State state;
+
+        // Problem[] history; // Potencjalnie snapshot, może timestampy?
+        // Problem currentProblem; Aktualny? 
+
+        abstract class PayloadState { }
+
+        class Free : PayloadState { }
+        class Taken : PayloadState
+        {
+            long timestamp;
+            public Taken()
+            {
+                // TODO: 
+                // this.timestamp = Clock.now()?
+            }
+        }
+        class Calculated : PayloadState { }
+
+        class Problem 
+        {
+            string hash;
+            PayloadState[] assignement;
+
+            public int getProgress()
+            {
+                // TODO: przy eksportowaniu do osobnego pliku dodać using System.Linq;
+                return assignement.Aggregate(0, (acc, payload) => payload is Calculated ? acc + 1 : acc);
+            }
+
+            // ProblemUpdated[ 1 -> Taken(timestamp), 2 -> free, 3 -> free,  4 -> free  ]
+            // ProblemUpdated[ 1 -> Taken(timestamp), 2 -> free, 3 -> free,  4 -> free  ]
+            // ./filter(_.free) <- ProblemUpdated[ 1 -> Taken(timestamp), 2 -> Taken(timestamp), 3 -> free,  4 -> free  ]
+
+            // ProblemUpdated[ 1 -> Taken(timestamp), 2 -> Taken(timestamp), 3 -> free,  4 -> free  ]
+            // ProblemUpdated[1-> Calculated, 2->Taken(timestamp), 3->Calculated, 4->Calculated] <- bierzemy pierwszy Taken, jeśli nie ma Free
+        }
 
         public Session(int port)
         {
@@ -51,9 +100,19 @@ namespace P2PProcessing
             connectedSessions.Add(helloResponse.GetNodeId(), new NodeSession(this, connection));
         }
 
+        public void broadcastToConnectedNodes(Msg msg)
+        {
+            foreach (var nodeSession in this.connectedSessions.Values)
+            {
+                nodeSession.send(msg);
+            }
+        }
+
         public  void onMessage(Msg msg)
         {
             P2P.logger.Debug($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
+
+            //state.onMessage(msg)
         }
 
         private void listenForConnections()

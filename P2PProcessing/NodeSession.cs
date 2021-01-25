@@ -42,6 +42,11 @@ namespace P2PProcessing
             }
         }
 
+        public void send(Msg msg)
+        {
+            this.connection.Send(msg);
+        }
+
         public override string ToString()
         {
             return $"Node session - {connection}";
