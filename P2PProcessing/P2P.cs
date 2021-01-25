@@ -26,5 +26,9 @@ namespace P2PProcessing
         {
             session.ConnectToNode(host, port);
         }
+
+        // TODO: StartProblem
+
+        // TODO: GetProgressInfo
     }
 }

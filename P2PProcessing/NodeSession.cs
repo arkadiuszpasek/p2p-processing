@@ -38,8 +38,13 @@ namespace P2PProcessing
             while (true)
             {
                 var msg = connection.Receive();
-                session.onMessage(msg);
+                session.OnMessage(msg);
             }
+        }
+
+        public void Send(Msg msg)
+        {
+            this.connection.Send(msg);
         }
 
         public override string ToString()
