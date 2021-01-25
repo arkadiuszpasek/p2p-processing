@@ -11,6 +11,8 @@ namespace P2PProcessingConsole
             {
                 var p = new P2P(8889, new Log(Level.Info));
                 p.ConnectToNode("localhost", 1234);
+
+                // TODO: Read? text -> SHA256 -> P2p. StartProblem
             }
             catch (Exception e)
             {
