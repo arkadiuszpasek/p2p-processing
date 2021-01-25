@@ -3,10 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Configurations>Debug;Release;2r2r</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\P2PProcessingConsole\P2PProcessingConsole.csproj" />
     <ProjectReference Include="..\P2PProcessing\P2PProcessing.csproj" />
   </ItemGroup>
 

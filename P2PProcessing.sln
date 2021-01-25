@@ -3,24 +3,37 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P2PProcessing", "P2PProcessing\P2PProcessing.csproj", "{4D5862EF-6B0E-49B1-A303-BB46B789DD99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P2PProcessing", "P2PProcessing\P2PProcessing.csproj", "{4D5862EF-6B0E-49B1-A303-BB46B789DD99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P2PProcessingConsole", "P2PProcessingConsole\P2PProcessingConsole.csproj", "{651F722A-EA24-40A1-9236-4AD92B44CF16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P2PProcessingConsole", "P2PProcessingConsole\P2PProcessingConsole.csproj", "{651F722A-EA24-40A1-9236-4AD92B44CF16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P2PPlaceholderNode", "P2PPlaceholderNode\P2PPlaceholderNode.csproj", "{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		2r2r|Any CPU = 2r2r|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D5862EF-6B0E-49B1-A303-BB46B789DD99}.2r2r|Any CPU.ActiveCfg = 2r2r|Any CPU
+		{4D5862EF-6B0E-49B1-A303-BB46B789DD99}.2r2r|Any CPU.Build.0 = 2r2r|Any CPU
 		{4D5862EF-6B0E-49B1-A303-BB46B789DD99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4D5862EF-6B0E-49B1-A303-BB46B789DD99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D5862EF-6B0E-49B1-A303-BB46B789DD99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D5862EF-6B0E-49B1-A303-BB46B789DD99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{651F722A-EA24-40A1-9236-4AD92B44CF16}.2r2r|Any CPU.ActiveCfg = 2r2r|Any CPU
+		{651F722A-EA24-40A1-9236-4AD92B44CF16}.2r2r|Any CPU.Build.0 = 2r2r|Any CPU
 		{651F722A-EA24-40A1-9236-4AD92B44CF16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{651F722A-EA24-40A1-9236-4AD92B44CF16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{651F722A-EA24-40A1-9236-4AD92B44CF16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{651F722A-EA24-40A1-9236-4AD92B44CF16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.2r2r|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.2r2r|Any CPU.Build.0 = Debug|Any CPU
+		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
