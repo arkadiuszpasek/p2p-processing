@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using P2PProcessing.States;
 using P2PProcessing.Problems;
+using P2PProcessing.Utils;
 
 namespace P2PProcessing
 {
@@ -88,6 +89,20 @@ namespace P2PProcessing
 
                 connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection));
             }
+        }
+
+        public void SetProblem(string hash)
+        {
+            P2P.logger.Info($"Setting problem {hash}...");
+            var problem = ProblemCalculation.CreateProblemFromHash(hash);
+            P2P.logger.Info(problem.ToString());
+
+            this.BroadcastToConnectedNodes(new ProblemUpdatedMsg(problem));
+        }
+
+        public int GetProgress()
+        {
+            return currentProblem.GetProgress();
         }
 
         public override string ToString()

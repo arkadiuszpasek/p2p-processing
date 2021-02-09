@@ -9,7 +9,7 @@ namespace P2PProcessing.Protocol
 {
     public enum MsgKind
     {
-        Hello = 1, HelloResponse, ProblemPayload, ProblemResult
+        Hello = 1, HelloResponse, ProblemUpdated, ProblemSolved
     }
 
     class MsgBuffer
@@ -99,10 +99,10 @@ namespace P2PProcessing.Protocol
                     return typeof(HelloMsg);
                 case MsgKind.HelloResponse:
                     return typeof(HelloResponseMsg);
-                case MsgKind.ProblemPayload:
-                    return typeof(ProblemPayloadMsg);
-                case MsgKind.ProblemResult:
-                    return typeof(ProblemResultMsg);
+                case MsgKind.ProblemSolved:
+                    return typeof(ProblemSolvedMsg);
+                case MsgKind.ProblemUpdated:
+                    return typeof(ProblemUpdatedMsg);
                 default:
                     throw new ProtocolException($"Invalid message kind: {kind}");
             }

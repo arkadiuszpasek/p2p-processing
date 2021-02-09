@@ -2,10 +2,25 @@
 
 namespace P2PProcessing.Problems
 {
-    abstract class PayloadState { }
+    public abstract class PayloadState { }
 
-    class Free : PayloadState { }
-    class Taken : PayloadState
+    public class Free : PayloadState
+    {
+        public int Length;
+        public string StartString;
+
+        public Free(int length, string start)
+        {
+            this.Length = length;
+            this.StartString = start;
+        }
+
+        public override string ToString()
+        {
+            return $"State Free, length - {Length}, start - {StartString}";
+        }
+    }
+    public class Taken : PayloadState
     {
         public long Timestamp;
         public Taken()
@@ -13,5 +28,5 @@ namespace P2PProcessing.Problems
             this.Timestamp = DateTime.Now.Ticks;
         }
     }
-    class Calculated : PayloadState { }
+    public class Calculated : PayloadState { }
 }

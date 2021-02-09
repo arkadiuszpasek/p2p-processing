@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
+using P2PProcessing.Problems;
 
 namespace P2PProcessing.Protocol
 {
@@ -43,22 +44,28 @@ namespace P2PProcessing.Protocol
     }
 
     [Serializable()]
-    [XmlRoot("ProblemPayload")]
-    public class ProblemPayloadMsg : Msg
+    [XmlRoot("ProblemUpdated")]
+    public class ProblemUpdatedMsg : Msg
     {
+        Problem Problem;
+
+        public ProblemUpdatedMsg(Problem problem)
+        {
+            this.Problem = problem;
+        }
         public override MsgKind GetMsgKind()
         {
-            return MsgKind.ProblemPayload;
+            return MsgKind.ProblemUpdated;
         }
     }
 
     [Serializable()]
-    [XmlRoot("ProblemResult")]
-    public class ProblemResultMsg : Msg
+    [XmlRoot("ProblemSolved")]
+    public class ProblemSolvedMsg : Msg
     {
         public override MsgKind GetMsgKind()
         {
-            return MsgKind.ProblemResult;
+            return MsgKind.ProblemSolved;
         }
     }
 }

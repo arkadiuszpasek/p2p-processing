@@ -10,7 +10,7 @@ namespace P2PPlaceholderNode
         {
             try
             {
-                var p = new P2P(1234, new Log(Level.Debug));
+                var p = new P2P(1234, new Log(Level.Info));
             }
             catch (Exception e)
             {

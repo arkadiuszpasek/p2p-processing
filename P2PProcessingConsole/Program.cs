@@ -7,12 +7,14 @@ namespace P2PProcessingConsole
     {
         static void Main(string[] args)
         {
+            const string input = "Hello";
             try
             {
                 var p = new P2P(8889, new Log(Level.Info));
                 p.ConnectToNode("localhost", 1234);
 
-                // TODO: Read? text -> SHA256 -> P2p. StartProblem
+                Console.WriteLine($"Running test input: {input}");
+                p.SetProblemRaw(input);
             }
             catch (Exception e)
             {
