@@ -60,6 +60,7 @@ namespace P2PProcessing
 
         public void BroadcastToConnectedNodes(Msg msg)
         {
+            P2P.logger.Info($"Broadcasting message {msg.GetType()}");
             foreach (var nodeSession in this.connectedSessions.Values)
             {
                 nodeSession.Send(msg);
@@ -68,12 +69,12 @@ namespace P2PProcessing
 
         public void OnMessage(Msg msg)
         {
-            P2P.logger.Debug($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
+            P2P.logger.Info($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
 
             var updated = msg as ProblemUpdatedMsg;
             if (updated != null)
             {
-                P2P.logger.Info($"{this}: Received {updated.Problem}");
+                P2P.logger.Debug($"{this}: Received {updated.Problem}");
             }
             state.OnMessage(msg);
         }
@@ -100,7 +101,6 @@ namespace P2PProcessing
         {
             P2P.logger.Info($"Setting problem {hash}...");
             var problem = ProblemCalculation.CreateProblemFromHash(hash);
-            P2P.logger.Info(problem.ToString());
 
             this.BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(problem));
         }
