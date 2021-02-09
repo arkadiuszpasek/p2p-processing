@@ -74,7 +74,6 @@ namespace P2PProcessing.States
                 this.session.HandlePayloadCalculated(index, result);
             } catch (Exception e)
             {
-                P2P.logger.Warn($"Error calculating: {e.Message}");
                 this.session.ChangeState(new NotWorkingState(this.session));
             }
         }
@@ -111,7 +110,7 @@ namespace P2PProcessing.States
                 var solved = msg as ProblemSolvedMsg;
 
                 this.session.currentProblem = solved.Problem;
-                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}");
+                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}\nChecked {session.currentProblem.GetProgress()}% combinations");
                 this.EndCalculating();
                 this.session.ChangeState(new NotWorkingState(this.session));
             }

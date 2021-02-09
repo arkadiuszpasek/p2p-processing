@@ -79,7 +79,6 @@ namespace P2PProcessing
         {
             if (this.state != null)
             {
-                P2P.logger.Info("Ending in change state");
                 this.state.EndCalculating();
             }
             this.state = state;
@@ -109,12 +108,12 @@ namespace P2PProcessing
             if (string.IsNullOrEmpty(result) && this.currentProblem.Solution == null)
             {
                 BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.currentProblem));
-                P2P.logger.Debug($"Calculated another payload, still no success..{state}");
+                P2P.logger.Info($"Calculated another payload, no success, checked {currentProblem.GetProgress()}% combinations");
                 state.CalculateNext();
             }
             else if (!string.IsNullOrEmpty(result))
             {
-                P2P.logger.Info($"Found correct combination: {result} for hash: {currentProblem.Hash}");
+                P2P.logger.Info($"Found correct combination: {result} for hash: {currentProblem.Hash}\nChecked {currentProblem.GetProgress()}% combinations");
                 this.currentProblem.Solution = result;
 
                 BroadcastToConnectedNodes(ProblemSolvedMsg.FromResult(result, this.currentProblem));
