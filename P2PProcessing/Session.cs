@@ -11,7 +11,7 @@ using P2PProcessing.Utils;
 namespace P2PProcessing
 {
 
-    class Session
+    public class Session
     {
         Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
         Guid id = Guid.NewGuid();
@@ -20,10 +20,11 @@ namespace P2PProcessing
         State state;
 
         Problem[] history; // może timestampy?
-        Problem currentProblem;
+        public Problem currentProblem;
 
         public Session(int port)
         {
+            this.ChangeState(new NotWorkingState(this));
             listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
 
@@ -60,7 +61,7 @@ namespace P2PProcessing
 
         public void BroadcastToConnectedNodes(Msg msg)
         {
-            P2P.logger.Info($"Broadcasting message {msg.GetType()}");
+            P2P.logger.Info($"{this}: Broadcasting message {msg.GetType()}");
             foreach (var nodeSession in this.connectedSessions.Values)
             {
                 nodeSession.Send(msg);
@@ -71,12 +72,17 @@ namespace P2PProcessing
         {
             P2P.logger.Info($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
 
-            var updated = msg as ProblemUpdatedMsg;
-            if (updated != null)
-            {
-                P2P.logger.Debug($"{this}: Received {updated.Problem}");
-            }
             state.OnMessage(msg);
+        }
+
+        public void ChangeState(State state)
+        {
+            if (this.state != null)
+            {
+                P2P.logger.Info("Ending in change state");
+                this.state.EndCalculating();
+            }
+            this.state = state;
         }
 
         private void listenForConnections()
@@ -96,13 +102,33 @@ namespace P2PProcessing
                 connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection));
             }
         }
+        
+        public void HandlePayloadCalculated(int payloadIndex, string result)
+        {
+            this.currentProblem.SetPayloadState(payloadIndex, new Calculated());
+            if (result == null)
+            {
+                P2P.logger.Info("Handle payload calc");
+                BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.currentProblem));
+                P2P.logger.Debug($"Calculated another payload, still no success..{state}");
+                state.CalculateNext();
+            }
+            else
+            {
+                P2P.logger.Info($"Found correct combination: {result} for hash: {currentProblem.Hash}. {currentProblem}");
+
+                BroadcastToConnectedNodes(ProblemSolvedMsg.FromResult(result, this.currentProblem));
+                this.ChangeState(new NotWorkingState(this));
+            }
+
+        }
 
         public void SetProblem(string hash)
         {
             P2P.logger.Info($"Setting problem {hash}...");
             var problem = ProblemCalculation.CreateProblemFromHash(hash);
 
-            this.BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(problem));
+            this.state.OnMessage(ProblemUpdatedMsg.FromProblem(problem));
         }
 
         public int GetProgress()
@@ -112,7 +138,7 @@ namespace P2PProcessing
 
         public override string ToString()
         {
-            return $"Session {id}";
+            return $"Session {id}, state {this.state.GetType()}";
         }
     }
 

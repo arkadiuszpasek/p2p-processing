@@ -32,9 +32,17 @@ namespace P2PProcessing.Problems
     public class Taken : PayloadState
     {
         public long Timestamp;
-        public Taken()
+        public int Length;
+        public string StartString;
+
+        public static Taken Of(int length, string start)
         {
-            this.Timestamp = DateTime.Now.Ticks;
+            var obj = new Taken();
+            obj.Length = length;
+            obj.StartString = start;
+            obj.Timestamp = DateTime.Now.Ticks;
+
+            return obj;
         }
     }
     public class Calculated : PayloadState { }

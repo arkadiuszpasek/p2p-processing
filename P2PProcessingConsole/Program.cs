@@ -7,7 +7,7 @@ namespace P2PProcessingConsole
     {
         static void Main(string[] args)
         {
-            const string input = "Hello";
+            const string input = "doobi";
             try
             {
                 var p = new P2P(8889, new Log(Level.Info));
