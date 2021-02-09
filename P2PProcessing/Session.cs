@@ -70,6 +70,11 @@ namespace P2PProcessing
         {
             P2P.logger.Debug($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
 
+            var updated = msg as ProblemUpdatedMsg;
+            if (updated != null)
+            {
+                P2P.logger.Info($"{this}: Received {updated.Problem}");
+            }
             state.OnMessage(msg);
         }
 
