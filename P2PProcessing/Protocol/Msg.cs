@@ -67,14 +67,13 @@ namespace P2PProcessing.Protocol
     [XmlRoot("ProblemSolved")]
     public class ProblemSolvedMsg : Msg
     {
-        public string Combination;
         public Problem Problem;
 
         public static ProblemSolvedMsg FromResult(string combination, Problem problem)
         {
             var msg = new ProblemSolvedMsg();
-            msg.Combination = combination;
             msg.Problem = problem;
+            msg.Problem.Solution = combination;
 
             return msg;
         }

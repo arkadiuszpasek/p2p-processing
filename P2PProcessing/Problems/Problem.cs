@@ -8,6 +8,7 @@ namespace P2PProcessing.Problems
     {
         public string Hash;
         public PayloadState[] Assignment;
+        public string Solution;
 
         public static Problem FromAssignment(string hash, PayloadState[] assignment)
         {

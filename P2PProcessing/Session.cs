@@ -61,7 +61,7 @@ namespace P2PProcessing
 
         public void BroadcastToConnectedNodes(Msg msg)
         {
-            P2P.logger.Info($"Broadcasting message {msg.GetType()}");
+            P2P.logger.Info($"{this}: Broadcasting message {msg.GetType()}");
             foreach (var nodeSession in this.connectedSessions.Values)
             {
                 nodeSession.Send(msg);
@@ -77,6 +77,11 @@ namespace P2PProcessing
 
         public void ChangeState(State state)
         {
+            if (this.state != null)
+            {
+                P2P.logger.Info("Ending in change state");
+                this.state.EndCalculating();
+            }
             this.state = state;
         }
 
@@ -103,6 +108,7 @@ namespace P2PProcessing
             this.currentProblem.SetPayloadState(payloadIndex, new Calculated());
             if (result == null)
             {
+                P2P.logger.Info("Handle payload calc");
                 BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.currentProblem));
                 P2P.logger.Debug($"Calculated another payload, still no success..{state}");
                 state.CalculateNext();
@@ -112,6 +118,7 @@ namespace P2PProcessing
                 P2P.logger.Info($"Found correct combination: {result} for hash: {currentProblem.Hash}. {currentProblem}");
 
                 BroadcastToConnectedNodes(ProblemSolvedMsg.FromResult(result, this.currentProblem));
+                this.ChangeState(new NotWorkingState(this));
             }
 
         }
@@ -131,7 +138,7 @@ namespace P2PProcessing
 
         public override string ToString()
         {
-            return $"Session {id}";
+            return $"Session {id}, state {this.state.GetType()}";
         }
     }
 

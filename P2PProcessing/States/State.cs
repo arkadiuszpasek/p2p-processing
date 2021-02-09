@@ -38,22 +38,40 @@ namespace P2PProcessing.States
                     startString = taken.StartString;
                     this.session.currentProblem.SetPayloadState(payloadIndex, Taken.Of(length, startString));
                 }
+                P2P.logger.Info("Handle payload calc");
+
                 this.session.BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.session.currentProblem));
                 this.thread = new Thread(() => calculate(payloadIndex, length, startString));
+                
                 this.thread.Start();
             } catch (Exception e)
             {
                 P2P.logger.Warn($"Not calculating next payload: {e.Message}");
             }
+        }
 
+        public void EndCalculating()
+        {
+            if (this.thread != null && this.thread.IsAlive)
+            {
+                this.thread.Interrupt();
+                this.thread = null;
+            }
         }
 
         private void calculate(int index, int length, string startString)
         {
-            P2P.logger.Debug($"Starting calculatation of payload {index}");
-            var result = ProblemCalculation.CheckPayload(this.session.currentProblem.Hash, length, startString);
-            P2P.logger.Debug($"Calculated payload {index} with result {result}");
-            this.session.HandlePayloadCalculated(index, result);
+            try
+            {
+                P2P.logger.Debug($"Starting calculatation of payload {index}");
+                var result = ProblemCalculation.CheckPayload(this.session.currentProblem.Hash, length, startString);
+                P2P.logger.Debug($"Calculated payload {index} with result {result}");
+
+                this.session.HandlePayloadCalculated(index, result);
+            } catch (Exception e)
+            {
+                P2P.logger.Warn($"Error calculating: {e.Message}");
+            }
         }
     }
 
@@ -63,7 +81,7 @@ namespace P2PProcessing.States
         public override void OnMessage(Msg msg)
         {
             var updated = msg as ProblemUpdatedMsg;
-            if (updated != null)
+            if (updated != null && this.session.currentProblem?.Solution == null)
             {
                 this.session.currentProblem = updated.Problem;
                 this.CalculateNext();
@@ -87,14 +105,11 @@ namespace P2PProcessing.States
                 var solved = msg as ProblemSolvedMsg;
 
                 this.session.currentProblem = solved.Problem;
-                P2P.logger.Info($"Someone found sollution: {solved.Combination}. {solved.Problem}");
+                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution}. {solved.Problem}");
                 this.session.ChangeState(new NotWorkingState(this.session));
-                
-                if (this.thread.IsAlive)
-                {
-                    this.thread.Interrupt();
-                }
 
+                P2P.logger.Info("Ending in problem solved");
+                this.EndCalculating();
             }
         }
 
@@ -119,10 +134,8 @@ namespace P2PProcessing.States
                         ownProblem.Assignment[i] = receivedProblem.Assignment[i];
                         hasAbandonedPayload = true;
 
-                        if (this.thread != null && this.thread.IsAlive)
-                        {
-                            this.thread.Interrupt();
-                        }
+                        P2P.logger.Info("Ending in collision");
+                        this.EndCalculating();
                     }
                 }
                 else if (!(ownProblem.Assignment[i] is Calculated) && receivedProblem.Assignment[i] is Calculated)
