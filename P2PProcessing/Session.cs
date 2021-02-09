@@ -61,7 +61,7 @@ namespace P2PProcessing
 
         public void BroadcastToConnectedNodes(Msg msg)
         {
-            P2P.logger.Info($"{this}: Broadcasting message {msg.GetType()}");
+            P2P.logger.Debug($"{this}: Broadcasting message {msg.GetType()}");
             foreach (var nodeSession in this.connectedSessions.Values)
             {
                 nodeSession.Send(msg);
@@ -70,7 +70,7 @@ namespace P2PProcessing
 
         public void OnMessage(Msg msg)
         {
-            P2P.logger.Info($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
+            P2P.logger.Debug($"{this}: Message {msg.GetMsgKind()} from {msg.GetNodeId()} received");
 
             state.OnMessage(msg);
         }
@@ -106,16 +106,16 @@ namespace P2PProcessing
         public void HandlePayloadCalculated(int payloadIndex, string result)
         {
             this.currentProblem.SetPayloadState(payloadIndex, new Calculated());
-            if (result == null)
+            if (string.IsNullOrEmpty(result) && this.currentProblem.Solution == null)
             {
-                P2P.logger.Info("Handle payload calc");
                 BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.currentProblem));
                 P2P.logger.Debug($"Calculated another payload, still no success..{state}");
                 state.CalculateNext();
             }
-            else
+            else if (!string.IsNullOrEmpty(result))
             {
-                P2P.logger.Info($"Found correct combination: {result} for hash: {currentProblem.Hash}. {currentProblem}");
+                P2P.logger.Info($"Found correct combination: {result} for hash: {currentProblem.Hash}");
+                this.currentProblem.Solution = result;
 
                 BroadcastToConnectedNodes(ProblemSolvedMsg.FromResult(result, this.currentProblem));
                 this.ChangeState(new NotWorkingState(this));

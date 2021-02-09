@@ -18,6 +18,12 @@ namespace P2PProcessing.States
         abstract public void OnMessage(Msg msg);
         public void CalculateNext()
         {
+            if (this.session.currentProblem.Solution != null)
+            {
+                this.session.ChangeState(new NotWorkingState(this.session));
+                return;
+            }
+
             int length;
             string startString;
             PayloadState payloadState;
@@ -38,8 +44,6 @@ namespace P2PProcessing.States
                     startString = taken.StartString;
                     this.session.currentProblem.SetPayloadState(payloadIndex, Taken.Of(length, startString));
                 }
-                P2P.logger.Info("Handle payload calc");
-
                 this.session.BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.session.currentProblem));
                 this.thread = new Thread(() => calculate(payloadIndex, length, startString));
                 
@@ -71,6 +75,7 @@ namespace P2PProcessing.States
             } catch (Exception e)
             {
                 P2P.logger.Warn($"Error calculating: {e.Message}");
+                this.session.ChangeState(new NotWorkingState(this.session));
             }
         }
     }
@@ -99,17 +104,16 @@ namespace P2PProcessing.States
             if (msg is ProblemUpdatedMsg)
             {
                 this.checkCollision(ref this.session.currentProblem, (msg as ProblemUpdatedMsg).Problem);
+                P2P.logger.Info($"Current progress: {this.session.currentProblem.GetProgress()}%");
             }
             else if (msg is ProblemSolvedMsg)
             {
                 var solved = msg as ProblemSolvedMsg;
 
                 this.session.currentProblem = solved.Problem;
-                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution}. {solved.Problem}");
-                this.session.ChangeState(new NotWorkingState(this.session));
-
-                P2P.logger.Info("Ending in problem solved");
+                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}");
                 this.EndCalculating();
+                this.session.ChangeState(new NotWorkingState(this.session));
             }
         }
 
@@ -134,7 +138,6 @@ namespace P2PProcessing.States
                         ownProblem.Assignment[i] = receivedProblem.Assignment[i];
                         hasAbandonedPayload = true;
 
-                        P2P.logger.Info("Ending in collision");
                         this.EndCalculating();
                     }
                 }
