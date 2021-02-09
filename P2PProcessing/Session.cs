@@ -97,7 +97,7 @@ namespace P2PProcessing
             var problem = ProblemCalculation.CreateProblemFromHash(hash);
             P2P.logger.Info(problem.ToString());
 
-            this.BroadcastToConnectedNodes(new ProblemUpdatedMsg(problem));
+            this.BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(problem));
         }
 
         public int GetProgress()

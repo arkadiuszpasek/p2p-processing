@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Xml.Serialization;
 
 namespace P2PProcessing.Problems
 {
@@ -7,10 +8,13 @@ namespace P2PProcessing.Problems
         public string Hash;
         public PayloadState[] Assignment;
 
-        public Problem(string hash, PayloadState[] assignment)
+        public static Problem FromAssignment(string hash, PayloadState[] assignment)
         {
-            this.Hash = hash;
-            this.Assignment = assignment;
+            var problem = new Problem();
+            problem.Hash = hash;
+            problem.Assignment = assignment;
+
+            return problem;
         }
 
         public int GetProgress()

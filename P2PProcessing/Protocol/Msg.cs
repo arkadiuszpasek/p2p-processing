@@ -47,15 +47,19 @@ namespace P2PProcessing.Protocol
     [XmlRoot("ProblemUpdated")]
     public class ProblemUpdatedMsg : Msg
     {
-        Problem Problem;
+        public Problem Problem;
 
-        public ProblemUpdatedMsg(Problem problem)
-        {
-            this.Problem = problem;
-        }
         public override MsgKind GetMsgKind()
         {
             return MsgKind.ProblemUpdated;
+        }
+
+        public static ProblemUpdatedMsg FromProblem(Problem problem)
+        {
+            var msg = new ProblemUpdatedMsg();
+            msg.Problem = problem;
+
+            return msg;
         }
     }
 

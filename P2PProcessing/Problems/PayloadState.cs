@@ -1,18 +1,24 @@
 ﻿using System;
+using System.Xml.Serialization;
 
 namespace P2PProcessing.Problems
 {
     public abstract class PayloadState { }
 
+    [Serializable()]
+    [XmlRoot("Free")]
     public class Free : PayloadState
     {
         public int Length;
         public string StartString;
 
-        public Free(int length, string start)
+        public static Free Of(int length, string start)
         {
-            this.Length = length;
-            this.StartString = start;
+            var obj = new Free();
+            obj.Length = length;
+            obj.StartString = start;
+
+            return obj;
         }
 
         public override string ToString()

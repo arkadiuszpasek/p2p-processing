@@ -10,7 +10,7 @@ namespace P2PProcessing.Utils
         public static Problem CreateProblemFromHash(string hash)
         {
             var assignments = getInitialChunks();
-            return new Problem(hash, assignments);
+            return Problem.FromAssignment(hash, assignments);
         }
 
         private static PayloadState[] getInitialChunks(int minLength = 10, int maxLength = 11)
@@ -20,7 +20,7 @@ namespace P2PProcessing.Utils
             {
                 for (char c = 'a'; c <= 'z'; c++)
                 {
-                    var assignment = new Free(i, c.ToString());
+                    var assignment = Free.Of(i, c.ToString());
                     assignments.Add(assignment);
                 }
             }
