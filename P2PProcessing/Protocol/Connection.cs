@@ -85,16 +85,12 @@ namespace P2PProcessing.Protocol
 
         public void Close()
         {
-            // TODO: create new Msg Disconnect, to inform other nodes that i'm disconecting
-
             P2P.logger.Debug($"{this} ending..");
             this.socket.Close();
         }
 
         public HelloResponseMsg ListenForHelloResponse()
         {
-            // TODO: with timeout
-
             var message = this.Receive() as HelloResponseMsg;
 
             if (message == null)
@@ -107,8 +103,6 @@ namespace P2PProcessing.Protocol
         
         public HelloMsg ListenForHello()
         {
-            // TODO: with timeout
-
             var message = this.Receive() as HelloMsg;
 
             if (message == null)
