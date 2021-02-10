@@ -47,6 +47,11 @@ namespace P2PProcessing
             }
         }
 
+        public void RemoveNode(Guid id)
+        {
+            connectedSessions.Remove(id);
+        }
+
         public void ConnectToNode(string host, int port)
         {
             P2P.logger.Debug($"{this}: Connecting to: {host}:{port}");
@@ -57,7 +62,7 @@ namespace P2PProcessing
 
             P2P.logger.Info($"{this}: Connected to: {helloResponse.GetNodeId()}");
 
-            connectedSessions.Add(helloResponse.GetNodeId(), new NodeSession(this, connection));
+            connectedSessions.Add(helloResponse.GetNodeId(), new NodeSession(this, connection, helloResponse.GetNodeId()));
         }
 
         public void BroadcastToConnectedNodes(Msg msg)
@@ -107,7 +112,7 @@ namespace P2PProcessing
                 var hello = connection.ListenForHello();
                 connection.Send(new HelloResponseMsg());
 
-                connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection));
+                connectedSessions.Add(hello.GetNodeId(), new NodeSession(this, connection, hello.GetNodeId()));
             }
         }
         

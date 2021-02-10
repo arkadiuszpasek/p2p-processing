@@ -1,89 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj": {}
+    "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessingConsole/P2PProcessingConsole.csproj": {}
   },
   "projects": {
-    "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj": {
+    "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessing/P2PProcessing.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
-        "projectName": "P2PProcessingConsole",
-        "projectPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
-        "packagesPath": "C:\\Users\\thevi\\.nuget\\packages\\",
-        "outputPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\thevi\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "netcoreapp3.1"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netcoreapp3.1": {
-            "projectReferences": {
-              "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj": {
-                "projectPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netcoreapp3.1": {
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.1.2, 3.1.2]"
-            }
-          ],
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj",
+        "projectUniqueName": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessing/P2PProcessing.csproj",
         "projectName": "P2PProcessing",
-        "projectPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj",
-        "packagesPath": "C:\\Users\\thevi\\.nuget\\packages\\",
-        "outputPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\obj\\",
+        "projectPath": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessing/P2PProcessing.csproj",
+        "packagesPath": "/home/pbilko/.nuget/packages/",
+        "outputPath": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessing/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\thevi\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/pbilko/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -117,7 +53,61 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.405/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessingConsole/P2PProcessingConsole.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessingConsole/P2PProcessingConsole.csproj",
+        "projectName": "P2PProcessingConsole",
+        "projectPath": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessingConsole/P2PProcessingConsole.csproj",
+        "packagesPath": "/home/pbilko/.nuget/packages/",
+        "outputPath": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessingConsole/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/pbilko/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessing/P2PProcessing.csproj": {
+                "projectPath": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessing/P2PProcessing.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.405/RuntimeIdentifierGraph.json"
         }
       }
     }

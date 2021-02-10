@@ -11,11 +11,13 @@ namespace P2PProcessing
         Session session;
         Connection connection;
         Thread thread;
+        private Guid backreference_id;  // Id assigned to this session, used in Session's list of NodeSessions
 
-        public NodeSession(Session session, Connection connection)
+        public NodeSession(Session session, Connection connection, Guid backreference_id)
         {
             this.session = session;
             this.connection = connection;
+            this.backreference_id = backreference_id;
 
             this.thread = new Thread(start);
             thread.Start();
@@ -27,8 +29,9 @@ namespace P2PProcessing
             {
                 thread.Join();
             }
-
+            
             connection.Close();
+            session.RemoveNode(backreference_id);
         }
 
         private void start()
