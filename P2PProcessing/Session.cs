@@ -18,6 +18,7 @@ namespace P2PProcessing
         TcpListener listener;
         Thread listenerThread;
         State state;
+        SocketConnectionFactory connectionFactory = new SocketConnectionFactory();
 
         Problem[] history; // może timestampy?
         public Problem currentProblem;
@@ -50,7 +51,8 @@ namespace P2PProcessing
         public void ConnectToNode(string host, int port)
         {
             P2P.logger.Debug($"{this}: Connecting to: {host}:{port}");
-            Connection connection = Connection.To(host, port, id);
+            Connection connection = connectionFactory.createOutgoingConnection(host, port, id);
+            connection.Send(new HelloMsg());
 
             var helloResponse = connection.ListenForHelloResponse();
 
@@ -94,7 +96,15 @@ namespace P2PProcessing
 
                 P2P.logger.Debug($"{this}: Received connection");
 
-                Connection connection = Connection.From(socket, id);
+                var endpoint = (IPEndPoint)(socket.RemoteEndPoint);
+
+                Connection connection = connectionFactory.createConnection(endpoint.Address.ToString(), endpoint.Port, id);
+
+                if (connection is SocketConnection)
+                {
+                    (connection as SocketConnection).Socket = socket;
+                }
+
                 var hello = connection.ListenForHello();
                 connection.Send(new HelloResponseMsg());
 
