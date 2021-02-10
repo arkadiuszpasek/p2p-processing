@@ -35,10 +35,16 @@ namespace P2PProcessing
         {
             P2P.logger.Debug($"{this} started");
 
-            while (true)
+            try
             {
-                var msg = connection.Receive();
-                session.OnMessage(msg);
+                while (true)
+                {
+                    var msg = connection.Receive();
+                    session.OnMessage(msg);
+                }
+            } catch (Exception e)
+            {
+                this.Close();
             }
         }
 
