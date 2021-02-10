@@ -20,7 +20,6 @@ namespace P2PProcessing
         State state;
         SocketConnectionFactory connectionFactory = new SocketConnectionFactory();
 
-        Problem[] history; // może timestampy?
         public Problem currentProblem;
 
         public Session(int port)
