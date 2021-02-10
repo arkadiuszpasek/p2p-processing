@@ -7,7 +7,7 @@ namespace P2PProcessingConsole
     {
         static void Main(string[] args)
         {
-            const string input = "Hello";
+            const string input = "hello";
             try
             {
                 

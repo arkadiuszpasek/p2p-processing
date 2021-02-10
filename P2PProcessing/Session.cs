@@ -151,7 +151,7 @@ namespace P2PProcessing
 
         public override string ToString()
         {
-            return $"Session {id}, state {this.state.GetType()}";
+            return $"Session {id}, state {this.state}";
         }
     }
 

@@ -93,6 +93,11 @@ namespace P2PProcessing.States
             }
         }
 
+        public override string ToString()
+        {
+            return "Not Working";
+        }
+
     }
 
     public class WorkingState : State
@@ -150,6 +155,11 @@ namespace P2PProcessing.States
             {
                 this.CalculateNext();
             }
+        }
+
+        public override string ToString()
+        {
+            return "Working";
         }
     }
 }

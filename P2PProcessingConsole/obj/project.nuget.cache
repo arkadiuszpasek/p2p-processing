@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "HHRlJtqtCuYKLpPVn0zWZ9xW8SFovC8HH+Z9PdrSM6DwA4vSSwZGRfG7P5ERsoHVoVXcBxyn4nbHKIviTU4VPA==",
+  "dgSpecHash": "BXg0wNEfPYhye1YMuRN9iedX5uJZ5Ic4K+l70xlBT/S6m4J6j4fvYrVhoJUl7sZKv02Ac0pyqSXGz2lubPOpyA==",
   "success": true,
-  "projectFilePath": "/home/pbilko/Desktop/SZKOŁA/DP/p2p-processing/P2PProcessingConsole/P2PProcessingConsole.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\thevi\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
   "logs": []
 }
