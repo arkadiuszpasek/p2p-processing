@@ -97,7 +97,7 @@ namespace P2PProcessing.Protocol
         {
             try
             {
-                Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                this.Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
                 Socket.Connect(this.Host, this.Port);
                 P2P.logger.Debug($"Connection connected to {Host}:{Port}");
             }

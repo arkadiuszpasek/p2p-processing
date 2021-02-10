@@ -11,5 +11,12 @@ namespace P2PProcessing.Protocol
             return new SocketConnection(host, port, ownId);
         }
 
+        public override Connection createOutgoingConnection(string host, int port, Guid ownId)
+        {
+            var connection = new SocketConnection(host, port, ownId);
+            connection.Initialize();
+
+            return connection;
+        }
     }
 }

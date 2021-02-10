@@ -51,11 +51,7 @@ namespace P2PProcessing
         public void ConnectToNode(string host, int port)
         {
             P2P.logger.Debug($"{this}: Connecting to: {host}:{port}");
-            Connection connection = connectionFactory.createConnection(host, port, id);
-            if (connection is SocketConnection)
-            {
-                (connection as SocketConnection).Initialize();
-            }
+            Connection connection = connectionFactory.createOutgoingConnection(host, port, id);
             connection.Send(new HelloMsg());
 
             var helloResponse = connection.ListenForHelloResponse();

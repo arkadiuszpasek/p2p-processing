@@ -7,5 +7,6 @@ namespace P2PProcessing.Protocol
     public abstract class ConnectionFactory
     {
         public abstract Connection createConnection(string host, int port, Guid ownId);
+        public abstract Connection createOutgoingConnection(string host, int port, Guid ownId);
     }
 }
