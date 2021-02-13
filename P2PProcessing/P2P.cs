@@ -41,27 +41,5 @@ namespace P2PProcessing
         {
             return session.GetProgress();
         }
-
-        public string inputProblem()
-        {
-            string input = "";
-            bool incorrect = true;
-            Console.WriteLine("Enter our password to hash it (only english letters and length has to be between 2 and 5)");
-            while (incorrect)
-            {
-                input = Console.ReadLine();
-                if (input.Length > 5 || input.Length < 2)
-                {
-                    Console.WriteLine("Your input is invalid, try again, remember about the rules!");
-                    Console.WriteLine("Enter our password to hash it (only english letters and length has to be between 2 and 5)");
-                }
-                else
-                {
-                    Console.WriteLine("Your input: {0}", input);
-                    incorrect = false;
-                }
-            }
-            return input;
-        }
     }
 }
