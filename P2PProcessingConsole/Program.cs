@@ -7,17 +7,14 @@ namespace P2PProcessingConsole
     {
         static void Main(string[] args)
         {
-            const string input = "hello";
             try
             {
-                
-                var p = new P2P(8889, new Log(Level.Info));
+                var p = new P2P(1235, new Log(Level.Info));
                 
                 // Connect to a node that's already running on this given port:
                 p.ConnectToNode("localhost", 1234);
 
-                Console.WriteLine($"Running test input: {input}");
-                p.SetProblemRaw(input);
+                p.SetProblemRaw(p.inputProblem()); //hash
             }
             catch (Exception e)
             {

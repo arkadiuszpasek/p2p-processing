@@ -27,19 +27,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\thevi\\.nuget\\packages\\": {}
+    "C:\\Users\\kosio\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
+      "projectUniqueName": "C:\\Users\\kosio\\source\\repos\\p2p-processing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
       "projectName": "P2PProcessingConsole",
-      "projectPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
-      "packagesPath": "C:\\Users\\thevi\\.nuget\\packages\\",
-      "outputPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessingConsole\\obj\\",
+      "projectPath": "C:\\Users\\kosio\\source\\repos\\p2p-processing\\P2PProcessingConsole\\P2PProcessingConsole.csproj",
+      "packagesPath": "C:\\Users\\kosio\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kosio\\source\\repos\\p2p-processing\\P2PProcessingConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\thevi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\kosio\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -51,9 +51,10 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj": {
-              "projectPath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj"
+            "C:\\Users\\kosio\\source\\repos\\p2p-processing\\P2PProcessing\\P2PProcessing.csproj": {
+              "projectPath": "C:\\Users\\kosio\\source\\repos\\p2p-processing\\P2PProcessing\\P2PProcessing.csproj"
             }
           }
         }
@@ -66,6 +67,7 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
+        "targetAlias": "netcoreapp3.1",
         "imports": [
           "net461",
           "net462",
@@ -76,18 +78,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[3.1.2, 3.1.2]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }
