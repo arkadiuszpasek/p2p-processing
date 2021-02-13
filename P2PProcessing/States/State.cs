@@ -20,7 +20,7 @@ namespace P2PProcessing.States
         {
             if (this.session.currentProblem.Solution != null)
             {
-                this.session.ChangeState(new NotWorkingState(this.session));
+                this.session.ChangeState(new NotWorkingState(this.session));  //żeby nie było zapętlania 
                 return;
             }
 

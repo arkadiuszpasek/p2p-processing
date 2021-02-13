@@ -15,7 +15,7 @@ namespace P2PProcessing.Utils
             return Problem.FromAssignment(hash, assignments);
         }
 
-        private static PayloadState[] getInitialChunks(int minLength = 5, int maxLength = 5)
+        private static PayloadState[] getInitialChunks(int minLength = 2, int maxLength = 5)
         {
             List<PayloadState> assignments = new List<PayloadState>();
             for (int i = minLength; i <= maxLength; i++)
