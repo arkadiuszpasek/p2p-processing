@@ -24,7 +24,7 @@ namespace NodeStarter
                     p.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                     p.StartInfo.CreateNoWindow = false;
                     p.Start();
-                    Thread.Sleep(2500);
+                    Thread.Sleep(3000);
                 }
             } catch (Exception e)
             {
