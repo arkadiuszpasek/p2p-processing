@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "P2PProcessingConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "5100"
+    }
+  }
+}

@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P2PProcessing", "P2PProcess
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P2PProcessingConsole", "P2PProcessingConsole\P2PProcessingConsole.csproj", "{651F722A-EA24-40A1-9236-4AD92B44CF16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P2PPlaceholderNode", "P2PPlaceholderNode\P2PPlaceholderNode.csproj", "{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P2PPlaceholderNode", "P2PPlaceholderNode\P2PPlaceholderNode.csproj", "{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeStarter", "NodeStarter\NodeStarter.csproj", "{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,12 @@ Global
 		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4C6CAF7-2191-479E-A6BC-4F50E1F31273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}.2r2r|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}.2r2r|Any CPU.Build.0 = Debug|Any CPU
+		{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA4CC6A7-CCE4-4DDC-B56C-BC3BAED292B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -21,4 +21,9 @@ namespace P2PProcessing.ErrorHandling
         public ProtocolException() : base() { }
         public ProtocolException(string e) : base(e) { }
     }
+    public class ThreadException : Exception 
+    {
+        public ThreadException() : base() { }
+        public ThreadException(string e) : base(e) { }
+    }
 }
