@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using P2PProcessing.ErrorHandling;
 using P2PProcessing.Problems;
 
 namespace P2PProcessing.Utils
 {
     public static class ProblemCalculation
     {
-        private static char[] Letters = "abcdefghijklmnoprstuwxyz".ToCharArray();
+        private static char[] Letters = "abcdefghijklmnoprstuqwxyz".ToCharArray();
         public static Problem CreateProblemFromHash(string hash)
         {
             var assignments = getInitialChunks();
@@ -41,11 +42,13 @@ namespace P2PProcessing.Utils
             }
         }
 
-        public static string CheckPayload(string problemHash, int length, string startString)
+        public static string CheckPayload(string problemHash, int length, string startString, ref bool running)
         {
             var combinations = CombinationsWithRepetition(length - 1);
             foreach (var combination in combinations)
             {
+                if (!running) throw new ThreadException();
+
                 var text = startString + combination;
                 var hash = Hasher.getHashHexRepresentation(text);
 

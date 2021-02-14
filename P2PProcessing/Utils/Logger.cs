@@ -17,7 +17,6 @@ namespace P2PProcessing.Utils
     {
         public void Debug(string s)
         {
-            Console.WriteLine(s);
         }
 
         public void Error(string s)

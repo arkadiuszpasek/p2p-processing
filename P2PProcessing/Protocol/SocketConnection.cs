@@ -97,13 +97,25 @@ namespace P2PProcessing.Protocol
         {
             try
             {
-                this.Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-                Socket.Connect(this.Host, this.Port);
-                P2P.logger.Debug($"Connection connected to {Host}:{Port}");
+                this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                IAsyncResult result = this.Socket.BeginConnect(this.Host, this.Port, null, null);
+
+                bool success = result.AsyncWaitHandle.WaitOne(1500, true);
+
+                if (this.Socket.Connected)
+                {
+                    this.Socket.EndConnect(result);
+                    P2P.logger.Debug($"Connection connected to {Host}:{Port}");
+                }
+                else
+                {
+                    this.Socket.Close();
+                    throw new ConnectionException($"Failed to connect to {this.Host}:{this.Port}");
+                }
             }
-            catch (Exception e)
+            catch
             {
-                P2P.logger.Error($"Error intializing socket to: {Host}: {e.Message}");
                 throw new ConnectionException("Error initializing");
             }
         }
