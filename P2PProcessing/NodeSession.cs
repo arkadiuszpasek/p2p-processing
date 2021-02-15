@@ -25,11 +25,6 @@ namespace P2PProcessing
 
         public void Close()
         {
-            if (thread.IsAlive)
-            {
-                thread.Join();
-            }
-            
             connection.Close();
             session.RemoveNode(backreferenceId);
         }
@@ -45,7 +40,7 @@ namespace P2PProcessing
                     var msg = connection.Receive();
                     session.OnMessage(msg);
                 }
-            } catch (Exception e)
+            } catch
             {
                 this.Close();
             }

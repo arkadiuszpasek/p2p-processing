@@ -41,7 +41,7 @@ namespace P2PProcessing.Protocol
                 return msgBuffer.BodyToMsg(body);
             } catch (Exception e)
             {
-                P2P.logger.Error($"Error listening for message: {e}");
+                P2P.logger.Warn($"Connection has disconnected");
                 throw new ConnectionException("Receiving error");
             }
         }
