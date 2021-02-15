@@ -7,6 +7,7 @@ using System.Threading;
 using P2PProcessing.States;
 using P2PProcessing.Problems;
 using P2PProcessing.Utils;
+using System.Net.NetworkInformation;
 
 namespace P2PProcessing
 {
@@ -57,11 +58,21 @@ namespace P2PProcessing
             P2P.logger.Info($"{this}: Starting discovery process");
             try
             {
-                for (int i = 5100; i < 5200; i += 1)
-                {
-                    if (i == ownPort) continue;
+                var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+                var connections = ipGlobalProperties.GetActiveTcpListeners();
 
-                    unsafeConnectToNode("localhost", i);
+                foreach (var connection in connections)
+                {
+                    if (connection.Port >= 5100 && connection.Port <= 5200 && ownPort != connection.Port)
+                    {
+                        try
+                        {
+                            unsafeConnectToNode(connection.Address.MapToIPv4().ToString(), connection.Port);
+                        } catch (Exception e)
+                        {
+                            P2P.logger.Debug($"Connecting status {e.Message}");
+                        }
+                    }
                 }
             }
             catch
@@ -73,6 +84,10 @@ namespace P2PProcessing
 
         private void unsafeConnectToNode(string host, int port)
         {
+            if (host == "0.0.0.0")
+            {
+                host = "127.0.0.1";
+            }
             Connection connection = connectionFactory.createOutgoingConnection(host, port, id);
             connection.Send(new HelloMsg());
 
@@ -121,7 +136,7 @@ namespace P2PProcessing
 
         private void listenForConnections()
         {
-            P2P.logger.Info($"{this} listening for connections {listener.LocalEndpoint}..");
+            P2P.logger.Debug($"{this} listening for connections {listener.LocalEndpoint}..");
 
             while (true)
             {
