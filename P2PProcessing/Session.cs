@@ -8,6 +8,7 @@ using P2PProcessing.States;
 using P2PProcessing.Problems;
 using P2PProcessing.Utils;
 using System.Net.NetworkInformation;
+using System.Text;
 
 namespace P2PProcessing
 {
@@ -16,7 +17,9 @@ namespace P2PProcessing
         Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
         Guid id = Guid.NewGuid();
         TcpListener listener;
+        UdpClient udpClient;
         Thread listenerThread;
+        Thread udpThread;
         State state;
         SocketConnectionFactory connectionFactory = new SocketConnectionFactory();
 
@@ -25,12 +28,19 @@ namespace P2PProcessing
         public Session(int port)
         {
             this.ChangeState(new NotWorkingState(this));
-            this.discoverNodes(port);
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
+            this.listener = new TcpListener(IPAddress.Any, port);
+            this.listener.Start();
+
+            this.udpClient = new UdpClient(port);
+            this.udpClient.EnableBroadcast = true;
 
             this.listenerThread = new Thread(listenForConnections);
             this.listenerThread.Start();
+
+            this.udpThread = new Thread(() => listenerForBroadcasts(port));
+            this.udpThread.Start();
+
+            this.discoverNodes(port);
         }
 
         public void Close()
@@ -56,31 +66,34 @@ namespace P2PProcessing
         private void discoverNodes(int ownPort)
         {
             P2P.logger.Info($"{this}: Starting discovery process");
-            try
-            {
-                var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-                var connections = ipGlobalProperties.GetActiveTcpListeners();
 
-                foreach (var connection in connections)
+            IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, ownPort);
+            byte[] bytes = Broadcast.WhoIsPresentMsg;
+            this.udpClient.Send(bytes, bytes.Length, ip);
+
+            this.discoverLocalNodes(ownPort);
+        }
+
+        private void discoverLocalNodes(int ownPort)
+        {
+            var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+            var connections = ipGlobalProperties.GetActiveTcpListeners();
+
+            foreach (var connection in connections)
+            {
+                if (connection.Port >= 5100 && connection.Port <= 5200 && ownPort != connection.Port)
                 {
-                    if (connection.Port >= 5100 && connection.Port <= 5200 && ownPort != connection.Port)
+                    try
                     {
-                        try
-                        {
-                            connectToNodeAt(connection.Address.MapToIPv4().ToString(), connection.Port);
-                        } catch (Exception e)
-                        {
-                            P2P.logger.Debug($"Connecting status {e.Message}");
-                        }
+                        connectToNodeAt(connection.Address.MapToIPv4().ToString(), connection.Port);
+                    }
+                    catch (Exception e)
+                    {
+                        P2P.logger.Debug($"Connecting status {e.Message}");
                     }
                 }
             }
-            catch
-            {
-                P2P.logger.Info($"{this}: Ended discover process");
-            }
         }
-
 
         private void connectToNodeAt(string host, int port)
         {
@@ -132,6 +145,26 @@ namespace P2PProcessing
                 this.state.EndCalculating();
             }
             this.state = state;
+        }
+
+        private void listenerForBroadcasts(int port)
+        {
+            while (true)
+            {
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, port);
+                var msg = this.udpClient.Receive(ref groupEP);
+
+                if (msg == Broadcast.WhoIsPresentMsg)
+                {
+                    byte[] response = Broadcast.IAmPresentMsg(port);
+                    this.udpClient.Send(response, response.Length, groupEP);
+                }
+                else if (Broadcast.isIAmPresentMsg(msg))
+                {
+                    var p = Broadcast.parsePresentMsg(msg);
+                    this.ConnectToNode(groupEP.Address.ToString(), p);
+                }
+            }
         }
 
         private void listenForConnections()

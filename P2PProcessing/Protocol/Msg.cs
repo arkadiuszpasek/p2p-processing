@@ -82,4 +82,27 @@ namespace P2PProcessing.Protocol
             return MsgKind.ProblemSolved;
         }
     }
+
+    public static class Broadcast
+    {
+        public static byte[] WhoIsPresentMsg = Encoding.UTF8.GetBytes("WhosPresent");
+        public static byte[] IAmPresentMsg(int port)
+        {
+            return Encoding.UTF8.GetBytes($"WhosPresent:{port}");
+        }
+
+        public static bool isIAmPresentMsg(byte[] msg)
+        {
+            var info = Encoding.UTF8.GetString(msg).Split(':');
+            if (info.Length == 2 && info[0] == "WhosPresent")
+            {
+                return true;
+            }
+            return false;
+        }
+        public static int parsePresentMsg(byte[] msg)
+        {
+            return int.Parse(Encoding.UTF8.GetString(msg).Split(':')[1]);
+        }
+    }
 }
