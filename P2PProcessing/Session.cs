@@ -67,7 +67,7 @@ namespace P2PProcessing
                     {
                         try
                         {
-                            unsafeConnectToNode(connection.Address.MapToIPv4().ToString(), connection.Port);
+                            connectToNodeAt(connection.Address.MapToIPv4().ToString(), connection.Port);
                         } catch (Exception e)
                         {
                             P2P.logger.Debug($"Connecting status {e.Message}");
@@ -82,7 +82,7 @@ namespace P2PProcessing
         }
 
 
-        private void unsafeConnectToNode(string host, int port)
+        private void connectToNodeAt(string host, int port)
         {
             if (host == "0.0.0.0")
             {
@@ -101,7 +101,7 @@ namespace P2PProcessing
         {
             try
             {
-                unsafeConnectToNode(host, port);
+                connectToNodeAt(host, port);
             }
             catch (Exception e)
             {
