@@ -77,7 +77,7 @@ namespace P2PProcessing
         private void discoverLocalNodes(int ownPort)
         {
             var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            var connections = ipGlobalProperties.GetActiveTcpListeners();
+            var connections = ipGlobalProperties.GetActiveUdpListeners();
 
             foreach (var connection in connections)
             {
@@ -85,6 +85,9 @@ namespace P2PProcessing
                 {
                     try
                     {
+                        IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, ownPort);
+                        byte[] bytes = Broadcast.WhoIsPresentMsg;
+                        this.udpClient.Send(bytes, bytes.Length, ip);
                         connectToNodeAt(connection.Address.MapToIPv4().ToString(), connection.Port);
                     }
                     catch (Exception e)
@@ -156,11 +159,13 @@ namespace P2PProcessing
 
                 if (msg == Broadcast.WhoIsPresentMsg)
                 {
+                    P2P.logger.Debug("A node is asking for present nodes");
                     byte[] response = Broadcast.IAmPresentMsg(port);
                     this.udpClient.Send(response, response.Length, groupEP);
                 }
                 else if (Broadcast.isIAmPresentMsg(msg))
                 {
+                    P2P.logger.Debug("A node is telling its present");
                     var p = Broadcast.parsePresentMsg(msg);
                     this.ConnectToNode(groupEP.Address.ToString(), p);
                 }
