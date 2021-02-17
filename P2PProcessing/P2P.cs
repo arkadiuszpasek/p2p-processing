@@ -21,12 +21,6 @@ namespace P2PProcessing
             this.session = new Session(port);
         }
 
-
-        public void ConnectToNode(string host, int port)
-        {
-            session.ConnectToNode(host, port);
-        }
-
         public void SetProblemRaw(string inputToHash)
         {
             this.SetProblemHash(Hasher.getHashHexRepresentation(inputToHash));

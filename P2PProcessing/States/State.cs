@@ -81,7 +81,7 @@ namespace P2PProcessing.States
                 {
                     this.session.currentProblem = solved.Problem;
                 }
-                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}\nChecked {session.currentProblem.GetProgress()}% combinations");
+                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}\nChecked {session.currentProblem.GetProgress()}% payloads");
                 this.EndCalculating();
                 this.session.ChangeState(new NotWorkingState(this.session));
             }

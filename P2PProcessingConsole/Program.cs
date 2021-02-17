@@ -26,13 +26,12 @@ namespace P2PProcessingConsole
         {
             try
             {
-                if (!(args.Length > 0))
+                int port = 5100;
+                if (args.Length > 0)
                 {
-                    Console.WriteLine("Starting arguments not provided");
-                    return;
+                    port = int.Parse(args[0]);
                 }
 
-                int port = int.Parse(args[0]);
                 var p = new P2P(port, new Log(Level.Info));
                 
                 p.SetProblemRaw(Program.getProblemString());
