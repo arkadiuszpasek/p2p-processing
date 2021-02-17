@@ -9,6 +9,7 @@ using P2PProcessing.Problems;
 using P2PProcessing.Utils;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Linq;
 
 namespace P2PProcessing
 {
@@ -37,7 +38,7 @@ namespace P2PProcessing
             this.listenerThread = new Thread(listenForConnections);
             this.listenerThread.Start();
 
-            this.udpThread = new Thread(() => listenerForBroadcasts(port));
+            this.udpThread = new Thread(() => listenerForMessages(port));
             this.udpThread.Start();
 
             this.discoverNodes(port);
@@ -85,10 +86,9 @@ namespace P2PProcessing
                 {
                     try
                     {
-                        IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, ownPort);
+                        IPEndPoint ip = new IPEndPoint(IPAddress.Parse(this.normalizeAddress(connection.Address.ToString())), connection.Port);
                         byte[] bytes = Broadcast.WhoIsPresentMsg;
                         this.udpClient.Send(bytes, bytes.Length, ip);
-                        connectToNodeAt(connection.Address.MapToIPv4().ToString(), connection.Port);
                     }
                     catch (Exception e)
                     {
@@ -100,10 +100,7 @@ namespace P2PProcessing
 
         private void connectToNodeAt(string host, int port)
         {
-            if (host == "0.0.0.0")
-            {
-                host = "127.0.0.1";
-            }
+            host = this.normalizeAddress(host);
             Connection connection = connectionFactory.createOutgoingConnection(host, port, id);
             connection.Send(new HelloMsg());
 
@@ -150,24 +147,32 @@ namespace P2PProcessing
             this.state = state;
         }
 
-        private void listenerForBroadcasts(int port)
+        private void listenerForMessages(int port)
         {
             while (true)
             {
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, port);
                 var msg = this.udpClient.Receive(ref groupEP);
 
-                if (msg == Broadcast.WhoIsPresentMsg)
+                if (groupEP.Port == port)
                 {
-                    P2P.logger.Debug("A node is asking for present nodes");
-                    byte[] response = Broadcast.IAmPresentMsg(port);
+                    continue;
+                }
+
+                if (msg.SequenceEqual(Broadcast.WhoIsPresentMsg))
+                {
+                    P2P.logger.Info("A node is asking for present nodes");
+                    byte[] response = Broadcast.IAmPresentMsg(port, this.id);
                     this.udpClient.Send(response, response.Length, groupEP);
                 }
                 else if (Broadcast.isIAmPresentMsg(msg))
                 {
-                    P2P.logger.Debug("A node is telling its present");
-                    var p = Broadcast.parsePresentMsg(msg);
-                    this.ConnectToNode(groupEP.Address.ToString(), p);
+                    P2P.logger.Info("A node is telling its present");
+                    var info = Broadcast.parsePresentMsg(msg);
+                    if (!this.connectedSessions.ContainsKey(info.id))
+                    {
+                        this.ConnectToNode(groupEP.Address.ToString(), info.port);
+                    }
                 }
             }
         }
@@ -254,6 +259,11 @@ namespace P2PProcessing
         public int GetProgress()
         {
             return currentProblem.GetProgress();
+        }
+
+        private string normalizeAddress(string add)
+        {
+            return add == "0.0.0.0" ? "127.0.0.1" : add;
         }
 
         public override string ToString()
