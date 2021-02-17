@@ -149,12 +149,13 @@ namespace P2PProcessing
 
         private void listenerForMessages(int port)
         {
+            var own = Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString();
             while (true)
             {
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, port);
                 var msg = this.udpClient.Receive(ref groupEP);
 
-                if (groupEP.Port == port)
+                if (groupEP.Address.ToString() == own)
                 {
                     continue;
                 }
