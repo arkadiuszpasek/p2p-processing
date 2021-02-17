@@ -147,7 +147,7 @@ namespace P2PProcessing
 
         private void listenerForMessages(int port)
         {
-            var own = Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString();
+            var own = getAddressV4(Dns.GetHostEntry(Dns.GetHostName()).AddressList);
             P2P.logger.Info($"{this}: Starting discovery process at {own}");
 
             while (true)
@@ -265,6 +265,19 @@ namespace P2PProcessing
         private string normalizeAddress(string add)
         {
             return add == "0.0.0.0" ? "127.0.0.1" : add;
+        }
+
+        private string getAddressV4(IPAddress[] addr)
+        {
+            foreach(var x in addr)
+            {
+                if (x.ToString().StartsWith("192.168"))
+                {
+                    return x.ToString();
+                }
+                    
+            }
+            return null;
         }
 
         public override string ToString()
