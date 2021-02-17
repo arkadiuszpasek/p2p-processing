@@ -116,7 +116,7 @@ namespace P2PProcessing
             }
             catch (Exception e)
             {
-                P2P.logger.Error($"{this}: Couldn't connect: e.Message");
+                P2P.logger.Error($"{this}: Couldn't connect: {e.Message}");
             }
         }
 
@@ -155,7 +155,7 @@ namespace P2PProcessing
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, port);
                 var msg = this.udpClient.Receive(ref groupEP);
 
-                if (groupEP.Address.ToString() == own)
+                if (shouldNotReact(groupEP, own, port))
                 {
                     continue;
                 }
@@ -278,6 +278,15 @@ namespace P2PProcessing
                     
             }
             return null;
+        }
+
+        private bool shouldNotReact(IPEndPoint ad, string own, int port)
+        {
+            if (ad.Address.ToString() != own) return false;
+            if (ad.Address.ToString() == own && ad.Port == port) return true;
+            if (ad.Address.ToString() == "127.0.0.1" && ad.Port == port) return true;
+
+            return false;
         }
 
         public override string ToString()
