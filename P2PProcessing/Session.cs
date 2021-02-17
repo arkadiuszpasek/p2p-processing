@@ -66,8 +66,6 @@ namespace P2PProcessing
 
         private void discoverNodes(int ownPort)
         {
-            P2P.logger.Info($"{this}: Starting discovery process");
-
             IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, ownPort);
             byte[] bytes = Broadcast.WhoIsPresentMsg;
             this.udpClient.Send(bytes, bytes.Length, ip);
@@ -150,6 +148,8 @@ namespace P2PProcessing
         private void listenerForMessages(int port)
         {
             var own = Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString();
+            P2P.logger.Info($"{this}: Starting discovery process at {own}");
+
             while (true)
             {
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, port);
@@ -162,13 +162,13 @@ namespace P2PProcessing
 
                 if (msg.SequenceEqual(Broadcast.WhoIsPresentMsg))
                 {
-                    P2P.logger.Info("A node is asking for present nodes");
+                    P2P.logger.Info($"A node from {groupEP.Address} is asking for present nodes");
                     byte[] response = Broadcast.IAmPresentMsg(port, this.id);
                     this.udpClient.Send(response, response.Length, groupEP);
                 }
                 else if (Broadcast.isIAmPresentMsg(msg))
                 {
-                    P2P.logger.Info("A node is telling its present");
+                    P2P.logger.Info($"A node from {groupEP.Address} is telling its present");
                     var info = Broadcast.parsePresentMsg(msg);
                     if (!this.connectedSessions.ContainsKey(info.id))
                     {
