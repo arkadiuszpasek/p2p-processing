@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "wOPQdKxjJLs3gdkP+4pkBIG0xQmksP4RPHlYRDJh3FmEpJ6Hy2E4oDQPtODJvgixpmolEvZfafXeCAs4F9PyFw==",
+  "dgSpecHash": "LwVAQAMmMyqgMMiW9G7X+kENmfky3nLA12UzQggQM4G9n4HQ3+SeC7W3iDO2DfUmx5Vx7KqOJ7n3a5BWqycbaQ==",
   "success": true,
   "projectFilePath": "D:\\Dev\\dp\\P2PProcessing\\P2PProcessing\\P2PProcessing.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\thevi\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Users\\thevi\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+    "C:\\Users\\thevi\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\thevi\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
   ],
   "logs": []
 }

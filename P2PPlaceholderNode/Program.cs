@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
+using Newtonsoft.Json;
 using P2PProcessing;
+using P2PProcessing.Problems;
 
 namespace P2PProcessingConsole
 {
@@ -27,22 +29,8 @@ namespace P2PProcessingConsole
         {
             try
             {
-                Thread.Sleep(1000);
-                int port = 5105;
-                if (args.Length > 0)
-                {
-                    port = int.Parse(args[0]);
-                }
-
-                var p = new P2P(port, new Log(Level.Info));
-
-                p.SetProblemRaw(Program.getProblemString());
-
-                while (true)
-                {
-                    Console.ReadLine();
-                    Console.WriteLine($"Calculated payloads: {p.GetProgress()}%");
-                }
+                var free = Free.Of(5, "s");
+                Console.WriteLine(JsonConvert.SerializeObject(free));
             }
             catch (Exception e)
             {
