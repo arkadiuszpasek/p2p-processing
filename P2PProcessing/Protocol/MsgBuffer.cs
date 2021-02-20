@@ -1,4 +1,5 @@
-﻿using P2PProcessing.ErrorHandling;
+﻿using Newtonsoft.Json;
+using P2PProcessing.ErrorHandling;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,14 +31,10 @@ namespace P2PProcessing.Protocol
                 byte[] kind = BitConverter.GetBytes((UInt16)msg.GetMsgKind());
                 byte[] body;
 
-                XmlSerializer serializer = getSerializer(msg);
+                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                var json = JsonConvert.SerializeObject(msg, settings);
 
-                using (var stream = new MemoryStream())
-                {
-                    serializer.Serialize(stream, msg);
-
-                    body = stream.ToArray();
-                }
+                body = Encoding.UTF8.GetBytes(json);
 
                 byte[] bodyLength = BitConverter.GetBytes((UInt32)body.Length);
 
@@ -60,18 +57,34 @@ namespace P2PProcessing.Protocol
 
         public Msg BodyToMsg(byte[] body)
         {
-            var serializer = getSerializer(getType(kind));
-
-            using (var stream = new MemoryStream(body, 0, body.Length, false))
+            try
             {
-                try
+                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                var msg = JsonConvert.DeserializeObject<Msg>(Encoding.UTF8.GetString(body), settings);
+
+                if (msg is HelloMsg)
                 {
-                    return (Msg)serializer.Deserialize(stream);
+                    return (HelloMsg)msg;
                 }
-                catch (Exception e)
+                if (msg is HelloResponseMsg)
                 {
-                    throw new ProtocolException($"Error deserializing message of kind: {kind}. {e}");
+                    return (HelloResponseMsg)msg;
                 }
+                if (msg is ProblemUpdatedMsg)
+                {
+                    return (ProblemUpdatedMsg)msg;
+                }
+                if (msg is ProblemSolvedMsg)
+                {
+                    return (ProblemSolvedMsg)msg;
+                }
+
+                throw new ProtocolException("Unknown type");
+
+            }
+            catch (Exception e)
+            {
+                throw new ProtocolException($"Error deserializing message of kind: {kind}. {e}");
             }
         }
 
