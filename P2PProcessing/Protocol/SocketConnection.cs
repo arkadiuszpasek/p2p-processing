@@ -38,6 +38,10 @@ namespace P2PProcessing.Protocol
                 byte[] body = new byte[msgBuffer.bodyLength];
 
                 int n = Socket.Receive(body, (int)msgBuffer.bodyLength, SocketFlags.None);
+                while (n < msgBuffer.bodyLength)
+                {
+                    n += Socket.Receive(body, n, (int)msgBuffer.bodyLength - n, SocketFlags.None);
+                }
                 if (n != msgBuffer.bodyLength)
                 {
                     throw new ConnectionException($"Didn't receive full body length {n}, expected {msgBuffer.bodyLength}");
@@ -104,7 +108,6 @@ namespace P2PProcessing.Protocol
             try
             {
                 this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                this.SetBufferSize();
 
                 IAsyncResult result = this.Socket.BeginConnect(this.Host, this.Port, null, null);
 
@@ -124,15 +127,6 @@ namespace P2PProcessing.Protocol
             catch
             {
                 throw new ConnectionException("Error initializing");
-            }
-        }
-
-        public void SetBufferSize()
-        {
-            if (this.Socket != null)
-            {
-                this.Socket.SendBufferSize = 16384;
-                this.Socket.ReceiveBufferSize = 16384;
             }
         }
 

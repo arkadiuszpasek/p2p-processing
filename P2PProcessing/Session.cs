@@ -197,7 +197,6 @@ namespace P2PProcessing
                 if (conn != null)
                 {
                     conn.Socket = socket;
-                    conn.SetBufferSize();
                 }
 
                 var hello = connection.ListenForHello();
