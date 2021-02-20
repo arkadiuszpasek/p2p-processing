@@ -57,7 +57,6 @@ namespace P2PProcessing.Protocol
 
             try
             {
-                Thread.Sleep(100);
                 byte[] buffer = MsgBuffer.MsgToBuffer(msg);
                 P2P.logger.Debug($"{this}: Sending {msg.GetMsgKind()} message - {buffer.Length}");
                 Socket.Send(buffer);
@@ -105,6 +104,7 @@ namespace P2PProcessing.Protocol
             try
             {
                 this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                this.SetBufferSize();
 
                 IAsyncResult result = this.Socket.BeginConnect(this.Host, this.Port, null, null);
 
@@ -124,6 +124,15 @@ namespace P2PProcessing.Protocol
             catch
             {
                 throw new ConnectionException("Error initializing");
+            }
+        }
+
+        public void SetBufferSize()
+        {
+            if (this.Socket != null)
+            {
+                this.Socket.SendBufferSize = 16384;
+                this.Socket.ReceiveBufferSize = 16384;
             }
         }
 

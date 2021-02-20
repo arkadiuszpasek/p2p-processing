@@ -192,9 +192,12 @@ namespace P2PProcessing
 
                 Connection connection = connectionFactory.createConnection(endpoint.Address.ToString(), endpoint.Port, id);
 
-                if (connection is SocketConnection)
+                var conn = connection as SocketConnection;
+
+                if (conn != null)
                 {
-                    (connection as SocketConnection).Socket = socket;
+                    conn.Socket = socket;
+                    conn.SetBufferSize();
                 }
 
                 var hello = connection.ListenForHello();
