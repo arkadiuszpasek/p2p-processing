@@ -3,6 +3,8 @@ using System.Threading;
 using Newtonsoft.Json;
 using P2PProcessing;
 using P2PProcessing.Problems;
+using P2PProcessing.Protocol;
+using P2PProcessing.Utils;
 
 namespace P2PProcessingConsole
 {
@@ -29,8 +31,22 @@ namespace P2PProcessingConsole
         {
             try
             {
-                var free = Free.Of(5, "s");
-                Console.WriteLine(JsonConvert.SerializeObject(free));
+                var ha = Hasher.getHashHexRepresentation("hello");
+                Console.WriteLine(ha);
+                var probl = ProblemCalculation.CreateProblemFromHash(ha);
+                var updated = ProblemUpdatedMsg.FromProblem(probl);
+
+                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                var json = JsonConvert.SerializeObject(updated, settings);
+                Console.WriteLine(json);
+
+                var msg = JsonConvert.DeserializeObject<Msg>(json, settings);
+                var x = msg as ProblemUpdatedMsg;
+                if (x != null)
+                {
+                    Console.WriteLine("Yeah");
+                    Console.WriteLine(x.Problem.Hash);
+                }
             }
             catch (Exception e)
             {

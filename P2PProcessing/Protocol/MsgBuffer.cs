@@ -10,7 +10,7 @@ namespace P2PProcessing.Protocol
 {
     public enum MsgKind
     {
-        Hello = 1, HelloResponse, ProblemUpdated, ProblemSolved
+        Hello, HelloResponse, ProblemUpdated, ProblemSolved
     }
 
     class MsgBuffer
@@ -60,7 +60,9 @@ namespace P2PProcessing.Protocol
             try
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-                var msg = JsonConvert.DeserializeObject<Msg>(Encoding.UTF8.GetString(body), settings);
+                var json = Encoding.UTF8.GetString(body);
+                Console.WriteLine(json);
+                var msg = JsonConvert.DeserializeObject<Msg>(json, settings);
 
                 if (msg is HelloMsg)
                 {
