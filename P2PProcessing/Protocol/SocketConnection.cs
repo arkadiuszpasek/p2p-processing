@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace P2PProcessing.Protocol
 {
@@ -36,12 +37,16 @@ namespace P2PProcessing.Protocol
 
                 byte[] body = new byte[msgBuffer.bodyLength];
 
-                Socket.Receive(body, (int)msgBuffer.bodyLength, SocketFlags.None);
+                int n = Socket.Receive(body, (int)msgBuffer.bodyLength, SocketFlags.None);
+                if (n != msgBuffer.bodyLength)
+                {
+                    throw new ConnectionException($"Didn't receive full body length {n}, expected {msgBuffer.bodyLength}");
+                }
                 P2P.logger.Debug($"{this}: Body of {msgBuffer.kind} received - {msgBuffer.bodyLength}");
                 return msgBuffer.BodyToMsg(body);
             } catch (Exception e)
             {
-                P2P.logger.Warn($"Connection has disconnected");
+                P2P.logger.Warn($"Connection has disconnected {e.Message}");
                 throw new ConnectionException("Receiving error");
             }
         }
@@ -52,9 +57,11 @@ namespace P2PProcessing.Protocol
 
             try
             {
+                Thread.Sleep(100);
                 byte[] buffer = MsgBuffer.MsgToBuffer(msg);
                 P2P.logger.Debug($"{this}: Sending {msg.GetMsgKind()} message - {buffer.Length}");
                 Socket.Send(buffer);
+                
             } catch (Exception e)
             {
                 P2P.logger.Error($"Error sending message: {e}");
