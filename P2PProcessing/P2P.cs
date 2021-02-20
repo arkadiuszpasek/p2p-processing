@@ -35,5 +35,10 @@ namespace P2PProcessing
         {
             return session.GetProgress();
         }
+
+        public Session GetSession()
+        {
+            return this.session;
+        }
     }
 }

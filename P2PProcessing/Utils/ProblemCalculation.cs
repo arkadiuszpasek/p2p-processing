@@ -12,7 +12,7 @@ namespace P2PProcessing.Utils
         private static char[] Letters = "abcdefghijklmnoprstuqwxyz".ToCharArray();
         public static Problem CreateProblemFromHash(string hash)
         {
-            var assignments = getInitialChunks();
+            var assignments = getInitialChunks(2, 10);
             return Problem.FromAssignment(hash, assignments);
         }
 

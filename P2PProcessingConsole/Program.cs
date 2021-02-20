@@ -11,7 +11,7 @@ namespace P2PProcessingConsole
             {
                 Console.WriteLine("Enter our password to hash it (only english letters and length has to be between 2 and 5)");
                 string input = Console.ReadLine();
-                if (input.Length > 5 || input.Length < 2)
+                if (input.Length > 10 || input.Length < 2)
                 {
                     Console.WriteLine("Your input is invalid, try again, remember about the rules!");
                 }
@@ -34,12 +34,15 @@ namespace P2PProcessingConsole
 
                 var p = new P2P(port, new Log(Level.Info));
                 
-                p.SetProblemRaw(Program.getProblemString());
-
                 while (true)
                 {
-                    Console.ReadLine();
-                    Console.WriteLine($"Calculated payloads: {p.GetProgress()}%");
+                    p.SetProblemRaw(Program.getProblemString());
+
+                    while (string.IsNullOrEmpty(p.GetSession().currentProblem.Solution))
+                    {
+                        Console.ReadLine();
+                        Console.WriteLine($"Calculated payloads: {p.GetProgress()}%");
+                    }
                 }
             }
             catch (Exception e)
@@ -47,7 +50,7 @@ namespace P2PProcessingConsole
                 Console.WriteLine(e);
             }
 
-            Console.Read();
+            
         }
     }
 }
