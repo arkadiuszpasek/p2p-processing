@@ -81,7 +81,7 @@ namespace P2PProcessing.States
                 {
                     this.session.currentProblem = solved.Problem;
                 }
-                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}\nChecked {session.currentProblem.GetProgress()}% combinations");
+                P2P.logger.Info($"Someone found sollution: {solved.Problem.Solution} for hash {solved.Problem.Hash}\nChecked {session.currentProblem.GetProgress()}% payloads");
                 this.EndCalculating();
                 this.session.ChangeState(new NotWorkingState(this.session));
             }
@@ -182,10 +182,10 @@ namespace P2PProcessing.States
             try
             {
                 P2P.logger.Debug($"Starting calculatation of payload {index}");
-                var result = ProblemCalculation.CheckPayload(this.session.currentProblem.Hash, length, startString, ref this.running);
+                var result = ProblemCalculation.CheckPayload(this.session.currentProblem.Hash, length, startString, this.session.currentProblem.Characters, ref this.running);
                 P2P.logger.Debug($"Calculated payload {index} with result {result}");
 
-                this.session.HandlePayloadCalculated(index, result);
+                this.session.HandlePayloadCalculated(index, result, startString, length);
             }
             catch (ThreadException e) { }
             catch (Exception e)

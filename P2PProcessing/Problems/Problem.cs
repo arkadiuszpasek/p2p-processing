@@ -7,14 +7,16 @@ namespace P2PProcessing.Problems
     public class Problem
     {
         public string Hash;
-        public PayloadState[] Assignment;
         public string Solution;
+        public char[] Characters;
+        public PayloadState[] Assignment;
 
-        public static Problem FromAssignment(string hash, PayloadState[] assignment)
+        public static Problem FromAssignment(string hash, char[] characters, PayloadState[] assignment)
         {
             var problem = new Problem();
             problem.Hash = hash;
             problem.Assignment = assignment;
+            problem.Characters = characters;
 
             return problem;
         }

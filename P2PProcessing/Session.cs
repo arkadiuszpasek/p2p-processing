@@ -8,29 +8,41 @@ using P2PProcessing.States;
 using P2PProcessing.Problems;
 using P2PProcessing.Utils;
 using System.Net.NetworkInformation;
+using System.Text;
+using System.Linq;
 
 namespace P2PProcessing
 {
     public class Session
     {
-        Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
-        Guid id = Guid.NewGuid();
-        TcpListener listener;
-        Thread listenerThread;
         State state;
+        Guid id = Guid.NewGuid();
         SocketConnectionFactory connectionFactory = new SocketConnectionFactory();
+        Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
 
         public Problem currentProblem;
+
+        Thread udpThread;
+        UdpClient udpClient;
+        Thread listenerThread;
+        TcpListener listener;
 
         public Session(int port)
         {
             this.ChangeState(new NotWorkingState(this));
-            this.discoverNodes(port);
-            listener = new TcpListener(IPAddress.Any, port);
-            listener.Start();
+            this.listener = new TcpListener(IPAddress.Any, port);
+            this.listener.Start();
+
+            this.udpClient = new UdpClient(port);
+            this.udpClient.EnableBroadcast = true;
 
             this.listenerThread = new Thread(listenForConnections);
             this.listenerThread.Start();
+
+            this.udpThread = new Thread(() => listenerForMessages(port));
+            this.udpThread.Start();
+
+            this.discoverNodes(port);
         }
 
         public void Close()
@@ -55,39 +67,39 @@ namespace P2PProcessing
 
         private void discoverNodes(int ownPort)
         {
-            P2P.logger.Info($"{this}: Starting discovery process");
-            try
-            {
-                var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-                var connections = ipGlobalProperties.GetActiveTcpListeners();
+            IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, ownPort);
+            byte[] bytes = Broadcast.WhoIsPresentMsg;
+            this.udpClient.Send(bytes, bytes.Length, ip);
 
-                foreach (var connection in connections)
+            this.discoverLocalNodes(ownPort);
+        }
+
+        private void discoverLocalNodes(int ownPort)
+        {
+            var ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+            var connections = ipGlobalProperties.GetActiveUdpListeners();
+
+            foreach (var connection in connections)
+            {
+                if (connection.Port >= 5100 && connection.Port <= 5200 && ownPort != connection.Port)
                 {
-                    if (connection.Port >= 5100 && connection.Port <= 5200 && ownPort != connection.Port)
+                    try
                     {
-                        try
-                        {
-                            connectToNodeAt(connection.Address.MapToIPv4().ToString(), connection.Port);
-                        } catch (Exception e)
-                        {
-                            P2P.logger.Debug($"Connecting status {e.Message}");
-                        }
+                        IPEndPoint ip = new IPEndPoint(IPAddress.Parse(this.normalizeAddress(connection.Address.ToString())), connection.Port);
+                        byte[] bytes = Broadcast.WhoIsPresentMsg;
+                        this.udpClient.Send(bytes, bytes.Length, ip);
+                    }
+                    catch (Exception e)
+                    {
+                        P2P.logger.Debug($"Connecting status {e.Message}");
                     }
                 }
             }
-            catch
-            {
-                P2P.logger.Info($"{this}: Ended discover process");
-            }
         }
-
 
         private void connectToNodeAt(string host, int port)
         {
-            if (host == "0.0.0.0")
-            {
-                host = "127.0.0.1";
-            }
+            host = this.normalizeAddress(host);
             Connection connection = connectionFactory.createOutgoingConnection(host, port, id);
             connection.Send(new HelloMsg());
 
@@ -105,7 +117,7 @@ namespace P2PProcessing
             }
             catch (Exception e)
             {
-                P2P.logger.Error($"{this}: Couldn't connect: e.Message");
+                P2P.logger.Error($"{this}: Couldn't connect: {e.Message}");
             }
         }
 
@@ -134,6 +146,39 @@ namespace P2PProcessing
             this.state = state;
         }
 
+        private void listenerForMessages(int port)
+        {
+            var own = getAddressV4(Dns.GetHostEntry(Dns.GetHostName()).AddressList);
+            P2P.logger.Info($"{this}: Starting discovery process at {own}");
+
+            while (true)
+            {
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, port);
+                var msg = this.udpClient.Receive(ref groupEP);
+
+                if (shouldNotReact(groupEP, own, port))
+                {
+                    continue;
+                }
+
+                if (msg.SequenceEqual(Broadcast.WhoIsPresentMsg))
+                {
+                    P2P.logger.Info($"A node from {groupEP.Address} is asking for present nodes");
+                    byte[] response = Broadcast.IAmPresentMsg(port, this.id);
+                    this.udpClient.Send(response, response.Length, groupEP);
+                }
+                else if (Broadcast.isIAmPresentMsg(msg))
+                {
+                    P2P.logger.Info($"A node from {groupEP.Address} is telling its present");
+                    var info = Broadcast.parsePresentMsg(msg);
+                    if (!this.connectedSessions.ContainsKey(info.id))
+                    {
+                        this.ConnectToNode(groupEP.Address.ToString(), info.port);
+                    }
+                }
+            }
+        }
+
         private void listenForConnections()
         {
             P2P.logger.Debug($"{this} listening for connections {listener.LocalEndpoint}..");
@@ -148,9 +193,11 @@ namespace P2PProcessing
 
                 Connection connection = connectionFactory.createConnection(endpoint.Address.ToString(), endpoint.Port, id);
 
-                if (connection is SocketConnection)
+                var conn = connection as SocketConnection;
+
+                if (conn != null)
                 {
-                    (connection as SocketConnection).Socket = socket;
+                    conn.Socket = socket;
                 }
 
                 var hello = connection.ListenForHello();
@@ -161,13 +208,13 @@ namespace P2PProcessing
             }
         }
         
-        public void HandlePayloadCalculated(int payloadIndex, string result)
+        public void HandlePayloadCalculated(int payloadIndex, string result, string startString, int length)
         {
             this.currentProblem.SetPayloadState(payloadIndex, new Calculated());
             if (string.IsNullOrEmpty(result) && this.currentProblem.Solution == null)
             {
                 BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.currentProblem));
-                P2P.logger.Info($"Calculated another payload, no success, checked {currentProblem.GetProgress()}% payloads");
+                P2P.logger.Info($"Calculated another payload: {startString}{new String('*', length-1)}, no success, checked {currentProblem.GetProgress()}% payloads");
 
                 state.CalculateNext();
             }
@@ -205,10 +252,10 @@ namespace P2PProcessing
             }
         }
 
-        public void SetProblem(string hash)
+        public void SetProblem(string hash, int minLength, int maxLength)
         {
             P2P.logger.Info($"Setting problem {hash}...");
-            var problem = ProblemCalculation.CreateProblemFromHash(hash);
+            var problem = ProblemCalculation.CreateProblemFromHash(hash, minLength, maxLength);
 
             this.state.OnMessage(ProblemUpdatedMsg.FromProblem(problem));
         }
@@ -216,6 +263,33 @@ namespace P2PProcessing
         public int GetProgress()
         {
             return currentProblem.GetProgress();
+        }
+
+        private string normalizeAddress(string add)
+        {
+            return add == "0.0.0.0" ? "127.0.0.1" : add;
+        }
+
+        private string getAddressV4(IPAddress[] addr)
+        {
+            foreach(var x in addr)
+            {
+                if (x.ToString().StartsWith("192.168"))
+                {
+                    return x.ToString();
+                }
+                    
+            }
+            return null;
+        }
+
+        private bool shouldNotReact(IPEndPoint ad, string own, int port)
+        {
+            if (ad.Address.ToString() != own) return false;
+            if (ad.Address.ToString() == own && ad.Port == port) return true;
+            if (ad.Address.ToString() == "127.0.0.1" && ad.Port == port) return true;
+
+            return false;
         }
 
         public override string ToString()

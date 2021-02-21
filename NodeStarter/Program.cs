@@ -19,7 +19,7 @@ namespace NodeStarter
                 {
                     Process p = new Process();
                     p.StartInfo.FileName = nodeProgramPath;
-                    p.StartInfo.Arguments = (5100 + i).ToString();
+                    p.StartInfo.Arguments = (5101 + i).ToString();
                     p.StartInfo.UseShellExecute = true;
                     p.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                     p.StartInfo.CreateNoWindow = false;

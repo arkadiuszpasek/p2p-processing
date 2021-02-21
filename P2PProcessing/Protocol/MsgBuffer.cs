@@ -1,7 +1,11 @@
-﻿using P2PProcessing.ErrorHandling;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using P2PProcessing.ErrorHandling;
+using P2PProcessing.Problems;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -9,8 +13,35 @@ namespace P2PProcessing.Protocol
 {
     public enum MsgKind
     {
-        Hello = 1, HelloResponse, ProblemUpdated, ProblemSolved
+        Hello, HelloResponse, ProblemUpdated, ProblemSolved
     }
+
+    public class KnownTypesBinder : ISerializationBinder
+    {
+        public IList<Type> KnownTypes = new List<Type>
+        {
+            typeof(HelloMsg),
+            typeof(HelloResponseMsg),
+            typeof(ProblemUpdatedMsg),
+            typeof(ProblemSolvedMsg),
+            typeof(Problem),
+            typeof(Free),
+            typeof(Taken),
+            typeof(Calculated)
+        };
+
+        public Type BindToType(string assemblyName, string typeName)
+        {
+            return KnownTypes.SingleOrDefault(t => t.Name == typeName);
+        }
+
+        public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        {
+            assemblyName = null;
+            typeName = serializedType.Name;
+        }
+    }
+
 
     class MsgBuffer
     {
@@ -23,6 +54,15 @@ namespace P2PProcessing.Protocol
             this.bodyLength = determineBodyLengthFromHeader(header);
         }
 
+        private static JsonSerializerSettings getJsonSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                SerializationBinder = new KnownTypesBinder()
+            };
+        }
+
         public static byte[] MsgToBuffer(Msg msg)
         {
             try
@@ -30,14 +70,10 @@ namespace P2PProcessing.Protocol
                 byte[] kind = BitConverter.GetBytes((UInt16)msg.GetMsgKind());
                 byte[] body;
 
-                XmlSerializer serializer = getSerializer(msg);
+                JsonSerializerSettings settings = MsgBuffer.getJsonSettings();
+                var json = JsonConvert.SerializeObject(msg, settings);
 
-                using (var stream = new MemoryStream())
-                {
-                    serializer.Serialize(stream, msg);
-
-                    body = stream.ToArray();
-                }
+                body = Encoding.UTF8.GetBytes(json);
 
                 byte[] bodyLength = BitConverter.GetBytes((UInt32)body.Length);
 
@@ -60,18 +96,35 @@ namespace P2PProcessing.Protocol
 
         public Msg BodyToMsg(byte[] body)
         {
-            var serializer = getSerializer(getType(kind));
-
-            using (var stream = new MemoryStream(body, 0, body.Length, false))
+            try
             {
-                try
+                JsonSerializerSettings settings = MsgBuffer.getJsonSettings();
+                var json = Encoding.UTF8.GetString(body);
+                var msg = JsonConvert.DeserializeObject<Msg>(json, settings);
+
+                if (msg is HelloMsg)
                 {
-                    return (Msg)serializer.Deserialize(stream);
+                    return (HelloMsg)msg;
                 }
-                catch (Exception e)
+                if (msg is HelloResponseMsg)
                 {
-                    throw new ProtocolException($"Error deserializing message of kind: {kind}. {e}");
+                    return (HelloResponseMsg)msg;
                 }
+                if (msg is ProblemUpdatedMsg)
+                {
+                    return (ProblemUpdatedMsg)msg;
+                }
+                if (msg is ProblemSolvedMsg)
+                {
+                    return (ProblemSolvedMsg)msg;
+                }
+
+                throw new ProtocolException("Unknown type");
+
+            }
+            catch (Exception e)
+            {
+                throw new ProtocolException($"Error deserializing message of kind: {kind}. {e}");
             }
         }
 
