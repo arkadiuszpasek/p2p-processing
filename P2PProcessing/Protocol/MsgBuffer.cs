@@ -1,8 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using P2PProcessing.ErrorHandling;
+using P2PProcessing.Problems;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -12,6 +15,33 @@ namespace P2PProcessing.Protocol
     {
         Hello, HelloResponse, ProblemUpdated, ProblemSolved
     }
+
+    public class KnownTypesBinder : ISerializationBinder
+    {
+        public IList<Type> KnownTypes = new List<Type>
+        {
+            typeof(HelloMsg),
+            typeof(HelloResponseMsg),
+            typeof(ProblemUpdatedMsg),
+            typeof(ProblemSolvedMsg),
+            typeof(Problem),
+            typeof(Free),
+            typeof(Taken),
+            typeof(Calculated)
+        };
+
+        public Type BindToType(string assemblyName, string typeName)
+        {
+            return KnownTypes.SingleOrDefault(t => t.Name == typeName);
+        }
+
+        public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        {
+            assemblyName = null;
+            typeName = serializedType.Name;
+        }
+    }
+
 
     class MsgBuffer
     {
@@ -24,6 +54,15 @@ namespace P2PProcessing.Protocol
             this.bodyLength = determineBodyLengthFromHeader(header);
         }
 
+        private static JsonSerializerSettings getJsonSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                SerializationBinder = new KnownTypesBinder()
+            };
+        }
+
         public static byte[] MsgToBuffer(Msg msg)
         {
             try
@@ -31,7 +70,7 @@ namespace P2PProcessing.Protocol
                 byte[] kind = BitConverter.GetBytes((UInt16)msg.GetMsgKind());
                 byte[] body;
 
-                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                JsonSerializerSettings settings = MsgBuffer.getJsonSettings();
                 var json = JsonConvert.SerializeObject(msg, settings);
 
                 body = Encoding.UTF8.GetBytes(json);
@@ -59,9 +98,8 @@ namespace P2PProcessing.Protocol
         {
             try
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                JsonSerializerSettings settings = MsgBuffer.getJsonSettings();
                 var json = Encoding.UTF8.GetString(body);
-                Console.WriteLine(json);
                 var msg = JsonConvert.DeserializeObject<Msg>(json, settings);
 
                 if (msg is HelloMsg)

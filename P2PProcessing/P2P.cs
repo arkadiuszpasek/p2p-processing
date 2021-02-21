@@ -21,14 +21,14 @@ namespace P2PProcessing
             this.session = new Session(port);
         }
 
-        public void SetProblemRaw(string inputToHash)
+        public void SetProblemRaw(string inputToHash, int minLength, int maxLength)
         {
-            this.SetProblemHash(Hasher.getHashHexRepresentation(inputToHash));
+            this.SetProblemHash(Hasher.getHashHexRepresentation(inputToHash), minLength, maxLength);
         }
 
-        public void SetProblemHash(string hash)
+        public void SetProblemHash(string hash, int minLength, int maxLength)
         {
-            session.SetProblem(hash);
+            session.SetProblem(hash, minLength, maxLength);
         }
 
         public int GetProgress()

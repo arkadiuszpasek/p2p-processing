@@ -15,16 +15,17 @@ namespace P2PProcessing
 {
     public class Session
     {
-        Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
-        Guid id = Guid.NewGuid();
-        TcpListener listener;
-        UdpClient udpClient;
-        Thread listenerThread;
-        Thread udpThread;
         State state;
+        Guid id = Guid.NewGuid();
         SocketConnectionFactory connectionFactory = new SocketConnectionFactory();
+        Dictionary<Guid, NodeSession> connectedSessions = new Dictionary<Guid, NodeSession>();
 
         public Problem currentProblem;
+
+        Thread udpThread;
+        UdpClient udpClient;
+        Thread listenerThread;
+        TcpListener listener;
 
         public Session(int port)
         {
@@ -251,10 +252,10 @@ namespace P2PProcessing
             }
         }
 
-        public void SetProblem(string hash)
+        public void SetProblem(string hash, int minLength, int maxLength)
         {
             P2P.logger.Info($"Setting problem {hash}...");
-            var problem = ProblemCalculation.CreateProblemFromHash(hash);
+            var problem = ProblemCalculation.CreateProblemFromHash(hash, minLength, maxLength);
 
             this.state.OnMessage(ProblemUpdatedMsg.FromProblem(problem));
         }
