@@ -185,7 +185,7 @@ namespace P2PProcessing.States
                 var result = ProblemCalculation.CheckPayload(this.session.currentProblem.Hash, length, startString, this.session.currentProblem.Characters, ref this.running);
                 P2P.logger.Debug($"Calculated payload {index} with result {result}");
 
-                this.session.HandlePayloadCalculated(index, result);
+                this.session.HandlePayloadCalculated(index, result, startString, length);
             }
             catch (ThreadException e) { }
             catch (Exception e)

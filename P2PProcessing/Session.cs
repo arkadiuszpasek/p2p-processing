@@ -208,13 +208,13 @@ namespace P2PProcessing
             }
         }
         
-        public void HandlePayloadCalculated(int payloadIndex, string result)
+        public void HandlePayloadCalculated(int payloadIndex, string result, string startString, int length)
         {
             this.currentProblem.SetPayloadState(payloadIndex, new Calculated());
             if (string.IsNullOrEmpty(result) && this.currentProblem.Solution == null)
             {
                 BroadcastToConnectedNodes(ProblemUpdatedMsg.FromProblem(this.currentProblem));
-                P2P.logger.Info($"Calculated another payload, no success, checked {currentProblem.GetProgress()}% payloads");
+                P2P.logger.Info($"Calculated another payload: {startString}{new String('*', length-1)}, no success, checked {currentProblem.GetProgress()}% payloads");
 
                 state.CalculateNext();
             }
