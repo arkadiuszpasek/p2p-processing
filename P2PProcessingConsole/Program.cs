@@ -37,12 +37,6 @@ namespace P2PProcessingConsole
                 while (true)
                 {
                     p.SetProblemRaw(Program.getProblemString(), 2, 10);
-
-                    while (string.IsNullOrEmpty(p.GetSession().currentProblem.Solution))
-                    {
-                        Console.ReadLine();
-                        Console.WriteLine($"Calculated payloads: {p.GetProgress()}%");
-                    }
                 }
             }
             catch (Exception e)
